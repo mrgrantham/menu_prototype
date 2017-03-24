@@ -1,10 +1,10 @@
 // ImGui - standalone example application for Glfw + OpenGL 3, using programmable pipeline
 // If you are new to ImGui, see examples/README.txt and documentation at the top of imgui.cpp.
 
-#include <imgui.h>
-#include "imgui_impl_glfw_gl3.h"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw_gl3.h"
 #include <stdio.h>
-#include <GL/gl3w.h>    // This example is using gl3w to access OpenGL functions (because it is small). You may use glew/glad/glLoadGen/etc. whatever already works for you.
+#include "gl3w/GL/gl3w.h"    // This example is using gl3w to access OpenGL functions (because it is small). You may use glew/glad/glLoadGen/etc. whatever already works for you.
 #include <GLFW/glfw3.h>
 
 static void error_callback(int error, const char* description)
@@ -64,8 +64,8 @@ int main(int, char**)
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
         }
-        bool rendering_window=false;
-        ImGui::ShowExampleAppCustomRendering(&rendering_window); 
+        //bool rendering_window=false;
+        //ImGui::ShowExampleAppCustomRendering(&rendering_window);
         // 2. Show another simple window, this time using an explicit Begin/End pair
         if (show_another_window)
         {
