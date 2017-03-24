@@ -12,6 +12,7 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error %d: %s\n", error, description);
 }
 
+
 int main(int, char**)
 {
     // Setup window
@@ -61,8 +62,10 @@ int main(int, char**)
             if (ImGui::Button("Test Window")) show_test_window ^= 1;
             if (ImGui::Button("Another Window")) show_another_window ^= 1;
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-        }
 
+        }
+        bool rendering_window=false;
+        ImGui::ShowExampleAppCustomRendering(&rendering_window); 
         // 2. Show another simple window, this time using an explicit Begin/End pair
         if (show_another_window)
         {
