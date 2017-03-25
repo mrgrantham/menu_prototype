@@ -11,7 +11,7 @@
 static ImVec2 canvas_pos;            // ImDrawList API uses screen coordinates!
 static ImVec2 canvas_size;       // Resize canvas to what's available
 static ImDrawList* draw_list;
-static int pixel_size = 1;
+static int pixel_size = 2;
 
 uint8_t screenBuffer[SCREEN_HEIGHT][SCREEN_WIDTH] = {{0}};
 
@@ -52,12 +52,58 @@ void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
     static int32_t yinc = 0;
     static int32_t xinc = 0;
 
+    static int32_t yend = 0;
+    static int32_t xend = 0;
+
     static int32_t ycomp = 0;
     static int32_t xcomp = 0;
+
+    ycomp = 0;
+    xcomp = 0;
     if (xdiff > ydiff) {
-        for (xinc = 0; xinc > )
-        
+        if (x1 < x2) {
+            xinc = x1;
+            yinc = y1;
+            xend = x2;
+            yend = y2;
+        } else {
+            xinc = x2;
+            yinc = y2;
+            xend = x1;
+            yend = y1;            
+        }
+        for (; xinc <= xend; xinc++ ) {
+            // printf("xinc: %3d yinc: %3d xdiff: %3d ydiff: %3d xcomp: %3d ycomp: %3d\n");
+            if(ycomp < xdiff) {
+                ycomp += ydiff;
+            } else {
+                yinc++;
+                ycomp -= xdiff;
+            }
+            drawPixel(xinc,yinc);
+        }
     } else {
+        if (y1 < y2) {
+            xinc = x1;
+            yinc = y1;
+            xend = x2;
+            yend = y2;
+        } else {
+            xinc = x2;
+            yinc = y2;
+            xend = x1;
+            yend = y1;            
+        }
+        for (; yinc < yend; yinc++ ) {
+            // printf("xinc: %3d yinc: %3d xdiff: %3d ydiff: %3d xcomp: %3d ycomp: %3d\n");
+            if(xcomp < ydiff) {
+                xcomp += xdiff;
+            } else {
+                xinc++;
+                xcomp -= ydiff;
+            }
+            drawPixel(xinc,yinc);
+        }
 
     }
 
@@ -65,10 +111,13 @@ void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
 
 void drawRec(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
     // x1y1 x2y1
-
+    drawLine( x1, y1, x2, y1);
     // x1y1 x1y2
+    drawLine( x1, y1, x1, y2);
     // x1y2 x2y2
+    drawLine( x1, y2, x2, y2);
     // x2y1 x2y2
+    drawLine( x2, y1, x2, y2);
 }
 
 void clearScreen()
@@ -77,6 +126,7 @@ void clearScreen()
     {
         for (int32_t pxcol = 0; pxcol < SCREEN_WIDTH; pxcol++)
         {
+            screenBuffer[pxrow][pxcol] = 0;
         }
     }
 }
@@ -182,9 +232,22 @@ void ShowMenuPrototypeWindow(bool* p_open)
         for (int i = 0; i < points.Size - 1; i += 2)
             draw_list->AddLine(ImVec2(canvas_pos.x + points[i].x, canvas_pos.y + points[i].y), ImVec2(canvas_pos.x + points[i+1].x, canvas_pos.y + points[i+1].y), IM_COL32(255,255,0,255), 2.0f);
         draw_list->PopClipRect();
+        static int32_t spinner = 0;
 
-        drawPixel(20,50);
-        drawPixel(120,160);
+        clearScreen();
+        // drawPixel(20,50);
+        // drawPixel(120,160);
+        drawLine(40,40,50,50);
+        drawLine(80,spinner,32,47);
+        drawLine(40,120,50,spinner);
+
+        drawRec(170,200,190,250);
+
+        if (spinner == 300) {
+            spinner = 0;
+        }
+        spinner++;
+
         drawBuffer(pixel_size);
 
         if (adding_preview)
