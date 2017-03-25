@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include "gl3w/GL/gl3w.h"    // This example is using gl3w to access OpenGL functions (because it is small). You may use glew/glad/glLoadGen/etc. whatever already works for you.
 #include <GLFW/glfw3.h>
+#include "jagdraw.hpp"
 
 static void error_callback(int error, const char* description)
 {
@@ -25,7 +26,7 @@ int main(int, char**)
 #if __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "ImGui OpenGL3 example", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(1280, 1280, "Remote Control UI Prototyping Tool", NULL, NULL);
     glfwMakeContextCurrent(window);
     gl3wInit();
 
@@ -42,6 +43,7 @@ int main(int, char**)
     //io.Fonts->AddFontFromFileTTF("../../extra_fonts/ProggyTiny.ttf", 10.0f);
     //io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 
+    bool show_control_window = true;
     bool show_test_window = true;
     bool show_another_window = false;
     ImVec4 clear_color = ImColor(114, 144, 154);
@@ -55,18 +57,27 @@ int main(int, char**)
         // 1. Show a simple window
         // Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
         {
-            static float f = 0.0f;
-            ImGui::Text("Hello, world!");
-            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
+            ImGui::SetNextWindowPos(ImVec2(35,35), ImGuiSetCond_FirstUseEver);
+            ImGui::SetNextWindowSize(ImVec2(450,250), ImGuiSetCond_FirstUseEver);
+            ImGui::Begin("Menu Controls", &show_control_window);
+            static float speed = 0.0f;
+            ImGui::SliderFloat("SPEED SLIDER", &speed, 0.0f, 1.0f);
             ImGui::ColorEdit3("clear color", (float*)&clear_color);
             if (ImGui::Button("Test Window")) show_test_window ^= 1;
             if (ImGui::Button("Another Window")) show_another_window ^= 1;
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-
+            ImGui::Text("Simple overlay\non the top-left side of the screen.");
+            ImGui::Separator();
+            ImGui::Button("<< LEFT "); ImGui::SameLine();
+            ImGui::Button(" MODE "); ImGui::SameLine();
+            ImGui::Button(" RIGHT >>");
+            ImGui::End();
         }
-        //bool rendering_window=false;
-        //ImGui::ShowExampleAppCustomRendering(&rendering_window);
+
+        bool rendering_window=false;
+        ShowMenuPrototypeWindow(&rendering_window);
         // 2. Show another simple window, this time using an explicit Begin/End pair
+
         if (show_another_window)
         {
             ImGui::SetNextWindowSize(ImVec2(200,100), ImGuiSetCond_FirstUseEver);

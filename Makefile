@@ -12,7 +12,7 @@
 #CXX = g++
 
 EXE = menu_proto
-OBJS = main.o ./imgui/imgui_impl_glfw_gl3.o
+OBJS = main.o jagdraw.o ./imgui/imgui_impl_glfw_gl3.o
 OBJS += ./imgui/imgui.o ./imgui/imgui_demo.o ./imgui/imgui_draw.o
 OBJS += ./gl3w/GL/gl3w.o
 
@@ -24,7 +24,7 @@ ifeq ($(UNAME_S), Linux) #LINUX
 	LIBS = -lGL `pkg-config --static --libs glfw3`
 
 	CXXFLAGS = -I./imgui -I./gl3w `pkg-config --cflags glfw3`
-	CXXFLAGS += -Wall -Wformat
+	CXXFLAGS += -Wall -Wformat -g
 	CFLAGS = $(CXXFLAGS)
 endif
 
@@ -59,5 +59,9 @@ all: $(EXE)
 $(EXE): $(OBJS)
 	$(CXX) -o $(EXE) $(OBJS) $(CXXFLAGS) $(LIBS)
 
+launch: $(EXE)
+	./$(EXE)
+	
 clean:
 	rm $(EXE) $(OBJS)
+
