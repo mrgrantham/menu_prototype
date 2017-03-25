@@ -15,8 +15,60 @@ static int pixel_size = 1;
 
 uint8_t screenBuffer[SCREEN_HEIGHT][SCREEN_WIDTH] = {{0}};
 
-void drawPixel(int x,int y) {
+void drawPixel(int32_t x,int32_t y) {
     screenBuffer[y][x] = 1;
+}
+
+void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
+    static int32_t xdiff;
+    static int32_t ydiff;
+    static int32_t xlow;
+    static int32_t xhigh;
+    static int32_t ylow;
+    static int32_t yhigh;
+
+    // get absolute value of x difference
+    if (x1 > x2) {
+        xdiff   = x1 - x2;
+        xhigh   = x1;
+        xlow    = x2;
+    } else {
+        xdiff   = x2 - x1;
+        xhigh   = x2;
+        xlow    = x1;
+    }
+
+    // get absolute value of y difference
+    if (y1 > y2) {
+        ydiff   = y1 - y2;
+        yhigh   = y1;
+        ylow    = y2;
+    } else {
+        ydiff   = y2 - y1;
+        yhigh   = y2;
+        ylow    = y1;
+    }
+
+    static int32_t yinc = 0;
+    static int32_t xinc = 0;
+
+    static int32_t ycomp = 0;
+    static int32_t xcomp = 0;
+    if (xdiff > ydiff) {
+        for (xinc = 0; xinc > )
+        
+    } else {
+
+    }
+
+}
+
+void drawRec(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
+    // x1y1 x2y1
+
+    // x1y1 x1y2
+    // x1y2 x2y2
+    // x2y1 x2y2
 }
 
 void clearScreen()
