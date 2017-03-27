@@ -47,10 +47,12 @@ void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
     static int32_t ycomp = 0;
     static int32_t xcomp = 0;
 
-    // ycomp = 0;
-    // xcomp = 0;  
+    ycomp = 0;
+    xcomp = 0;  
+
+    // X is the longer traversal
     if (xdiff > ydiff) {
-        ycomp = (ydiff << 2) - xdiff; 
+        //ycomp = ydiff - xdiff; 
         if (x1 < x2) {
             xinc = x1;
             yinc = y1;
@@ -65,23 +67,20 @@ void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
         ImGui::Text("Xinc: %3d Yinc: %3d",xinc,yinc);
         ImGui::Text("Xend: %3d Yend: %3d",xend,yend);       
         for (; xinc <= xend; xinc++ ) {
-            // printf("xinc: %3d yinc: %3d xdiff: %3d ydiff: %3d xcomp: %3d ycomp: %3d\n");
-            // if(ycomp < xdiff) {
-            if(ycomp <= 0) {
-                ycomp += ydiff << 2;
-            } else {
+            ycomp += ydiff;
+            ImGui::Text("xinc: %3d yinc: %3d xdiff: %3d ydiff: %3d xcomp: %3d ycomp: %3d\n",xinc,yinc,xdiff,ydiff,xcomp,ycomp);
+            if(ycomp >= xdiff) {
                 if (yinc < yend) {
                     yinc++;
                 } else {
                     yinc--;
                 }
-                ycomp -= xdiff << 2;
-                // ycomp = 0;
+                ycomp -= xdiff;
             }
             drawPixel(xinc,yinc);
         }
-    } else {
-        xcomp = (xdiff << 2) - ydiff; 
+    } else { // Y is the longer traversal
+        //xcomp = xdiff - ydiff; 
         if (y1 < y2) {
             xinc = x1;
             yinc = y1;
@@ -96,18 +95,15 @@ void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
         ImGui::Text("Xinc: %3d Yinc: %3d",xinc,yinc);
         ImGui::Text("Xend: %3d Yend: %3d",xend,yend);      
         for (; yinc < yend; yinc++ ) {
-            // printf("xinc: %3d yinc: %3d xdiff: %3d ydiff: %3d xcomp: %3d ycomp: %3d\n");
-//            if(xcomp < ydiff) {
-            if(xcomp <= 0) {
-                xcomp += xdiff << 2;
-            } else {
+            xcomp += xdiff;
+            ImGui::Text("xinc: %3d yinc: %3d xdiff: %3d ydiff: %3d xcomp: %3d ycomp: %3d\n",xinc,yinc,xdiff,ydiff,xcomp,ycomp);
+            if(xcomp >= ydiff) {
                 if (xinc < xend) {
                     xinc++;
                 } else {
                     xinc--;
                 }                
-                xcomp -= ydiff << 2;
-                // xcomp = 0;
+                xcomp -= ydiff;
             }
             drawPixel(xinc,yinc);
         }
@@ -168,16 +164,16 @@ void drawBuffer( uint16_t pixel_size) {
 // Demonstrate using the low-level ImDrawList to draw custom shapes. 
 void ShowMenuPrototypeWindow(bool* p_open)
 {
-    static int32_t spinner = 0;
+    static int32_t spinner = 205;
     static int32_t l1x1=0,l1y1=0,l1x2=0,l1y2=0,l2x1=0,l2y1=0,l2x2=0,l2y2=0;
     l1x1 = 80;
     l1y1 = spinner;
     l1x2 = 32;
     l1y2 = 47;
     
-    l2x1 = 40;
-    l2y1 = 120;
-    l2x2 = 50;
+    l2x1 = 100;
+    l2y1 = 200;
+    l2x2 = 105;
     l2y2 = spinner;   
 
     ImGui::SetNextWindowPos(ImVec2(530,35), ImGuiSetCond_FirstUseEver);
@@ -260,19 +256,20 @@ void ShowMenuPrototypeWindow(bool* p_open)
         // drawPixel(120,160);
 
 
-       // drawLine(40,40,50,50);
+       drawLine(40,40,50,50);
         drawPixel(l1x1,l1y1);
         drawPixel(l1x2,l1y2);
         drawLine(l1x1,l1y1,l1x2,l1y2);
 
         drawPixel(l2x1,l2y1);
         drawPixel(l2x2,l2y2);
-        drawLine(l2x1,l2y1,l2x2,l2y2);
+        //drawLine(l2x1,l2y1,l2x2,l2y2);
 
-        //drawRec(170,200,190,250);
+        drawLine(l2x2,l2y2,l2x1,l2y1);
 
-        
-        spinner %= 300;
+
+        drawRec(170,200,190,250);
+        drawRec(170,spinner,spinner,250);
 
         drawBuffer(pixel_size);
 
