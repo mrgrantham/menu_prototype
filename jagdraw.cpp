@@ -5,8 +5,6 @@
 
 #define SCREEN_WIDTH 240
 #define SCREEN_HEIGHT 320
-// #define SCREEN_WIDTH 24
-// #define SCREEN_HEIGHT 32
 
 static ImVec2 canvas_pos;            // ImDrawList API uses screen coordinates!
 static ImVec2 canvas_size;       // Resize canvas to what's available
@@ -22,32 +20,23 @@ void drawPixel(int32_t x,int32_t y) {
 void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
     static int32_t xdiff;
     static int32_t ydiff;
-    static int32_t xlow;
-    static int32_t xhigh;
-    static int32_t ylow;
-    static int32_t yhigh;
 
     // get absolute value of x difference
     if (x1 > x2) {
         xdiff   = x1 - x2;
-        xhigh   = x1;
-        xlow    = x2;
     } else {
         xdiff   = x2 - x1;
-        xhigh   = x2;
-        xlow    = x1;
     }
 
     // get absolute value of y difference
     if (y1 > y2) {
         ydiff   = y1 - y2;
-        yhigh   = y1;
-        ylow    = y2;
     } else {
         ydiff   = y2 - y1;
-        yhigh   = y2;
-        ylow    = y1;
     }
+
+    // ImGui::Text("XDIFF: %3d YDIFF: %3d",xdiff,ydiff);
+
 
     static int32_t yinc = 0;
     static int32_t xinc = 0;
@@ -58,9 +47,10 @@ void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
     static int32_t ycomp = 0;
     static int32_t xcomp = 0;
 
-    ycomp = 0;
-    xcomp = 0;
+    // ycomp = 0;
+    // xcomp = 0;  
     if (xdiff > ydiff) {
+        ycomp = (ydiff << 2) - xdiff; 
         if (x1 < x2) {
             xinc = x1;
             yinc = y1;
@@ -72,17 +62,26 @@ void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
             xend = x1;
             yend = y1;            
         }
+        ImGui::Text("Xinc: %3d Yinc: %3d",xinc,yinc);
+        ImGui::Text("Xend: %3d Yend: %3d",xend,yend);       
         for (; xinc <= xend; xinc++ ) {
             // printf("xinc: %3d yinc: %3d xdiff: %3d ydiff: %3d xcomp: %3d ycomp: %3d\n");
-            if(ycomp < xdiff) {
-                ycomp += ydiff;
+            // if(ycomp < xdiff) {
+            if(ycomp <= 0) {
+                ycomp += ydiff << 2;
             } else {
-                yinc++;
-                ycomp -= xdiff;
+                if (yinc < yend) {
+                    yinc++;
+                } else {
+                    yinc--;
+                }
+                ycomp -= xdiff << 2;
+                // ycomp = 0;
             }
             drawPixel(xinc,yinc);
         }
     } else {
+        xcomp = (xdiff << 2) - ydiff; 
         if (y1 < y2) {
             xinc = x1;
             yinc = y1;
@@ -94,13 +93,21 @@ void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
             xend = x1;
             yend = y1;            
         }
+        ImGui::Text("Xinc: %3d Yinc: %3d",xinc,yinc);
+        ImGui::Text("Xend: %3d Yend: %3d",xend,yend);      
         for (; yinc < yend; yinc++ ) {
             // printf("xinc: %3d yinc: %3d xdiff: %3d ydiff: %3d xcomp: %3d ycomp: %3d\n");
-            if(xcomp < ydiff) {
-                xcomp += xdiff;
+//            if(xcomp < ydiff) {
+            if(xcomp <= 0) {
+                xcomp += xdiff << 2;
             } else {
-                xinc++;
-                xcomp -= ydiff;
+                if (xinc < xend) {
+                    xinc++;
+                } else {
+                    xinc--;
+                }                
+                xcomp -= ydiff << 2;
+                // xcomp = 0;
             }
             drawPixel(xinc,yinc);
         }
@@ -161,8 +168,20 @@ void drawBuffer( uint16_t pixel_size) {
 // Demonstrate using the low-level ImDrawList to draw custom shapes. 
 void ShowMenuPrototypeWindow(bool* p_open)
 {
+    static int32_t spinner = 0;
+    static int32_t l1x1=0,l1y1=0,l1x2=0,l1y2=0,l2x1=0,l2y1=0,l2x2=0,l2y2=0;
+    l1x1 = 80;
+    l1y1 = spinner;
+    l1x2 = 32;
+    l1y2 = 47;
+    
+    l2x1 = 40;
+    l2y1 = 120;
+    l2x2 = 50;
+    l2y2 = spinner;   
+
     ImGui::SetNextWindowPos(ImVec2(530,35), ImGuiSetCond_FirstUseEver);
-    ImGui::SetNextWindowSize(ImVec2(700,900), ImGuiSetCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(700,800), ImGuiSetCond_FirstUseEver);
     if (!ImGui::Begin("Menu Prototype", p_open))
     {
         ImGui::End();
@@ -192,6 +211,9 @@ void ShowMenuPrototypeWindow(bool* p_open)
             ImGui::SameLine();
             ImGui::Text("\tCurrent Size: Dunno");
         }
+        ImGui::SliderInt("SPINNER SLIDER", &spinner, 0, 300);
+        ImGui::Text("Spinner: %3d",spinner);
+
         // Here we are using InvisibleButton() as a convenience to 1) advance the cursor and 2) allows us to use IsItemHovered()
         // However you can draw directly and poll mouse/keyboard by yourself. You can manipulate the cursor using GetCursorPos() and SetCursorPos().
         // If you only use the ImDrawList API, you can notify the owner window of its extends by using SetCursorPos(max).
@@ -232,21 +254,25 @@ void ShowMenuPrototypeWindow(bool* p_open)
         for (int i = 0; i < points.Size - 1; i += 2)
             draw_list->AddLine(ImVec2(canvas_pos.x + points[i].x, canvas_pos.y + points[i].y), ImVec2(canvas_pos.x + points[i+1].x, canvas_pos.y + points[i+1].y), IM_COL32(255,255,0,255), 2.0f);
         draw_list->PopClipRect();
-        static int32_t spinner = 0;
 
         clearScreen();
         // drawPixel(20,50);
         // drawPixel(120,160);
-        drawLine(40,40,50,50);
-        drawLine(80,spinner,32,47);
-        drawLine(40,120,50,spinner);
 
-        drawRec(170,200,190,250);
 
-        if (spinner == 300) {
-            spinner = 0;
-        }
-        spinner++;
+       // drawLine(40,40,50,50);
+        drawPixel(l1x1,l1y1);
+        drawPixel(l1x2,l1y2);
+        drawLine(l1x1,l1y1,l1x2,l1y2);
+
+        drawPixel(l2x1,l2y1);
+        drawPixel(l2x2,l2y2);
+        drawLine(l2x1,l2y1,l2x2,l2y2);
+
+        //drawRec(170,200,190,250);
+
+        
+        spinner %= 300;
 
         drawBuffer(pixel_size);
 

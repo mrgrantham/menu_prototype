@@ -26,7 +26,7 @@ int main(int, char**)
 #if __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-    GLFWwindow* window = glfwCreateWindow(1280, 1280, "Remote Control UI Prototyping Tool", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(1280, 1080, "Remote Control UI Prototyping Tool", NULL, NULL);
     glfwMakeContextCurrent(window);
     gl3wInit();
 
