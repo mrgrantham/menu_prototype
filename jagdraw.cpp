@@ -2,19 +2,96 @@
 #include "imgui/imgui.h"
 #include <stdint.h>
 #include <stdio.h>
+#include "fonts.h"
 
 #define SCREEN_WIDTH 240
 #define SCREEN_HEIGHT 320
+
+#define IM_ARRAYSIZE(_ARR)  ((int)(sizeof(_ARR)/sizeof(*_ARR)))
 
 static ImVec2 canvas_pos;            // ImDrawList API uses screen coordinates!
 static ImVec2 canvas_size;       // Resize canvas to what's available
 static ImDrawList* draw_list;
 static int pixel_size = 2;
 
+static void* current_animation;
+typedef struct anim_params{
+    int32_t duration;
+    int32_t start_val;
+    int32_t end_val;
+    int32_t progress;
+    anim_params() { duration = 0; start_val = 0; end_val = 0; progress = 0; }
+    anim_params(int32_t dur, int32_t start,int32_t end,int32_t prog) { duration = dur; start_val = start; end_val = end; progress = prog; }
+} anim_params_t;
+
+anim_params_t ap;
+
+// assumption of animation running 60Hz
+// each exectution of animate() function is 1 step in animation
+uint16_t animate() {
+
+}
+
+// configure duration, start val, destination val
+void setAnimationParams(int32_t dur, int32_t start, int32_t end) {
+    ap.duration = dur;
+    ap.start_val = start;
+    ap.end_val = end;
+    ap.progress = 0;
+}
+void setAnimationParams(anim_params &_ap) {
+    ap = _ap;
+}
+
+void setAnimationCurve(void * curve) {
+    current_animation = curve;
+}
+
+float testdata[] = {1.0f,2.0f,3.0f,4.0f,5.0f,6.0f,7.0f,8.0f,7.0f,7.0f,6.0f,6.0f,5.0f,5.0f,6.0f,6.0f,9.0f};
+
+void animation1() {
+
+}
+
+void ShowAnimationDesignWindow(bool* p_open) {
+    static bool first_run = true;
+
+    static anim_params_t params[5];
+
+
+
+    if (first_run) {
+        params[0] = anim_params(50,0,20,0);
+        params[1] = anim_params(100,75,120,0);
+        params[2] = anim_params(25,10,20,0);
+        params[3] = anim_params(75,40,70,0);
+        params[4] = anim_params(50,10,50,0);
+        first_run = false;
+    }
+
+    ImGui::SetNextWindowPos(ImVec2(35,350), ImGuiSetCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(450,0), ImGuiSetCond_FirstUseEver);
+    if (!ImGui::Begin("Animation Design", p_open))
+    {
+        ImGui::End();
+        return;
+    }
+
+    for (int32_t dataindex = 0; dataindex < 5; dataindex++) {
+        ImGui::PlotLines("Anim", testdata, IM_ARRAYSIZE(testdata), 0, "avg 0.0", -2.0f, 10.0f, ImVec2(0,100));
+    }
+
+
+    ImGui::End();
+}
+
+
 uint8_t screenBuffer[SCREEN_HEIGHT][SCREEN_WIDTH] = {{0}};
 
-void drawPixel(int32_t x,int32_t y) {
-    screenBuffer[y][x] = 1;
+void drawPixel(int32_t x,int32_t y, uint8_t color = 1) {
+    if(x < SCREEN_WIDTH && x >= 0 && y < SCREEN_HEIGHT && y >= 0) {
+        screenBuffer[y][x] = color;
+    }
 }
 
 void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
@@ -64,11 +141,11 @@ void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
             xend = x1;
             yend = y1;            
         }
-        ImGui::Text("Xinc: %3d Yinc: %3d",xinc,yinc);
-        ImGui::Text("Xend: %3d Yend: %3d",xend,yend);       
+        // ImGui::Text("Xinc: %3d Yinc: %3d",xinc,yinc);
+        // ImGui::Text("Xend: %3d Yend: %3d",xend,yend);       
         for (; xinc <= xend; xinc++ ) {
             ycomp += ydiff;
-            ImGui::Text("xinc: %3d yinc: %3d xdiff: %3d ydiff: %3d xcomp: %3d ycomp: %3d\n",xinc,yinc,xdiff,ydiff,xcomp,ycomp);
+            // ImGui::Text("xinc: %3d yinc: %3d xdiff: %3d ydiff: %3d xcomp: %3d ycomp: %3d\n",xinc,yinc,xdiff,ydiff,xcomp,ycomp);
             if(ycomp >= xdiff) {
                 if (yinc < yend) {
                     yinc++;
@@ -92,11 +169,11 @@ void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
             xend = x1;
             yend = y1;            
         }
-        ImGui::Text("Xinc: %3d Yinc: %3d",xinc,yinc);
-        ImGui::Text("Xend: %3d Yend: %3d",xend,yend);      
+        // ImGui::Text("Xinc: %3d Yinc: %3d",xinc,yinc);
+        // ImGui::Text("Xend: %3d Yend: %3d",xend,yend);      
         for (; yinc < yend; yinc++ ) {
             xcomp += xdiff;
-            ImGui::Text("xinc: %3d yinc: %3d xdiff: %3d ydiff: %3d xcomp: %3d ycomp: %3d\n",xinc,yinc,xdiff,ydiff,xcomp,ycomp);
+            // ImGui::Text("xinc: %3d yinc: %3d xdiff: %3d ydiff: %3d xcomp: %3d ycomp: %3d\n",xinc,yinc,xdiff,ydiff,xcomp,ycomp);
             if(xcomp >= ydiff) {
                 if (xinc < xend) {
                     xinc++;
@@ -123,6 +200,44 @@ void drawRec(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
     drawLine( x2, y1, x2, y2);
 }
 
+uint8_t * current_font;
+int32_t font_size=3;
+
+void drawChar(char letter, uint16_t xpos, uint16_t ypos, uint16_t size = 1){
+    static uint16_t index;
+    static uint16_t font_height = 8;
+    static uint16_t font_width = 6;
+    index = letter - 0x20;
+    static uint16_t row = 0;
+    static uint16_t col = 0;
+    static uint16_t px = 0;
+    static uint16_t py = 0;
+    for (col = 0; col < font_width; col++ ) {
+        for (row = 0; row < font_height; row++ ) {
+            static uint8_t pixel;
+            pixel = (current_font[(index * (font_width + 1)) + col] >> row) & 0x01;
+            for (px = 0; px < size; px++) {
+                for (py = 0; py < size; py++ ) {
+                    drawPixel(xpos + (col * size) + px,ypos + (row * size) + py,pixel);
+                }
+            }
+        }
+    }
+}
+
+void print(char * line, uint16_t xpos, uint16_t ypos,uint16_t size = 1) {
+    static uint8_t font_width = 6;
+    static uint16_t line_length;
+    line_length  = strlen(line);
+    for (uint16_t c = 0; c < line_length; c++) {
+        drawChar(line[c], xpos + (font_width * c * size),ypos,size);
+    }
+}
+
+void setFont(uint8_t *font){
+    current_font = font;
+}
+
 void clearScreen()
 {
     for (int32_t pxrow = 0; pxrow < SCREEN_HEIGHT; pxrow++)
@@ -138,6 +253,17 @@ void drawBuffer( uint16_t pixel_size) {
     static ImVec2 draw_start;
     draw_start.x = canvas_pos.x + ( (canvas_size.x - (pixel_size * SCREEN_WIDTH)) / 2 );
     draw_start.y = canvas_pos.y + ( (canvas_size.y - (pixel_size * SCREEN_HEIGHT)) / 2 );
+    // draw border
+    static ImVec2 border_upper_left;
+    static ImVec2 border_bottom_right;
+
+    border_upper_left.x = draw_start.x - 1;
+    border_upper_left.y = draw_start.y - 1; 
+    border_bottom_right.x = draw_start.x + (pixel_size * SCREEN_WIDTH) + 1;
+    border_bottom_right.y = draw_start.y + (pixel_size * SCREEN_HEIGHT) + 1; 
+
+    draw_list->AddRect(border_upper_left, border_bottom_right, ImColor(0,0,250), 0.0f, ~0, 1.0f);
+
     for ( int32_t pxrow = 0; pxrow < SCREEN_HEIGHT; pxrow++ ) {
         for ( int32_t pxcol = 0; pxcol < SCREEN_WIDTH; pxcol++ ) {
             static ImColor px_color = ImColor(IM_COL32_WHITE);
@@ -207,7 +333,9 @@ void ShowMenuPrototypeWindow(bool* p_open)
             ImGui::SameLine();
             ImGui::Text("\tCurrent Size: Dunno");
         }
-        ImGui::SliderInt("SPINNER SLIDER", &spinner, 0, 300);
+        ImGui::SliderInt("POS SLIDER", &spinner, 0, 300);
+        ImGui::SliderInt("FONT SIZE SLIDER", &font_size, 0, 10);
+
         ImGui::Text("Spinner: %3d",spinner);
 
         // Here we are using InvisibleButton() as a convenience to 1) advance the cursor and 2) allows us to use IsItemHovered()
@@ -250,26 +378,36 @@ void ShowMenuPrototypeWindow(bool* p_open)
         for (int i = 0; i < points.Size - 1; i += 2)
             draw_list->AddLine(ImVec2(canvas_pos.x + points[i].x, canvas_pos.y + points[i].y), ImVec2(canvas_pos.x + points[i+1].x, canvas_pos.y + points[i+1].y), IM_COL32(255,255,0,255), 2.0f);
         draw_list->PopClipRect();
-
         clearScreen();
         // drawPixel(20,50);
         // drawPixel(120,160);
+        setFont((uint8_t*)&homespun_font);
+        // drawChar(' ',100,150);
+        // drawChar('!',110,150);
+        // drawChar('"',120,150);
+        // drawChar('#',130,150);
+        // drawChar('$',140,150);
+        // drawChar('%',150,150);
 
+        static char * test = "--TESTING--";
+        static int16_t font_width = 6;
+        print(test,SCREEN_WIDTH/2 - (strlen(test)* font_size/2 * font_width),spinner,font_size);
 
-       drawLine(40,40,50,50);
-        drawPixel(l1x1,l1y1);
-        drawPixel(l1x2,l1y2);
-        drawLine(l1x1,l1y1,l1x2,l1y2);
+    //    drawLine(40,40,50,50);
+    //     drawPixel(l1x1,l1y1);
+    //     drawPixel(l1x2,l1y2);
+    //     drawLine(l1x1,l1y1,l1x2,l1y2);
 
-        drawPixel(l2x1,l2y1);
-        drawPixel(l2x2,l2y2);
-        //drawLine(l2x1,l2y1,l2x2,l2y2);
+    //     drawPixel(l2x1,l2y1);
+    //     drawPixel(l2x2,l2y2);
+    //     //drawLine(l2x1,l2y1,l2x2,l2y2);
 
-        drawLine(l2x2,l2y2,l2x1,l2y1);
+    //     drawLine(l2x2,l2y2,l2x1,l2y1);
 
-
-        drawRec(170,200,190,250);
-        drawRec(170,spinner,spinner,250);
+        static int32_t margin = 15;
+        static int32_t rec_height = 50;
+        drawRec(margin,SCREEN_HEIGHT/2 - (rec_height/2),SCREEN_WIDTH - margin,SCREEN_HEIGHT/2 + (rec_height/2));
+        //drawRec(170,spinner,spinner,250);
 
         drawBuffer(pixel_size);
 
