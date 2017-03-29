@@ -3,54 +3,103 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "fonts.h"
+#include <math.h>
 
 #define SCREEN_WIDTH 240
 #define SCREEN_HEIGHT 320
 
+// #define SCREEN_WIDTH 128
+// #define SCREEN_HEIGHT 128
+
 #define IM_ARRAYSIZE(_ARR)  ((int)(sizeof(_ARR)/sizeof(*_ARR)))
 
-static ImVec2 canvas_pos;            // ImDrawList API uses screen coordinates!
+static ImVec2 canvas_pos;            // ImDrawList current_API uses screen coordinates!
 static ImVec2 canvas_size;       // Resize canvas to what's available
 static ImDrawList* draw_list;
 static int pixel_size = 2;
 
-static void* current_animation;
 typedef struct anim_params{
     int32_t duration;
     int32_t start_val;
     int32_t end_val;
     int32_t progress;
-    anim_params() { duration = 0; start_val = 0; end_val = 0; progress = 0; }
-    anim_params(int32_t dur, int32_t start,int32_t end,int32_t prog) { duration = dur; start_val = start; end_val = end; progress = prog; }
+    int32_t output;
+    void (* curve)();
+    anim_params() { duration = 0; start_val = 0; end_val = 0; progress = 0; curve = NULL;}
+    anim_params(int32_t dur, int32_t start,int32_t end,void (* crv)()) { duration = dur; start_val = start; end_val = end; progress = start; curve = crv; }
 } anim_params_t;
 
-anim_params_t ap;
+typedef struct d_array {
+    float *data;
+    uint16_t size;
+} d_array_t;
+
+anim_params_t current_ap;
+d_array_t testdata[5];
 
 // assumption of animation running 60Hz
 // each exectution of animate() function is 1 step in animation
-uint16_t animate() {
-
-}
 
 // configure duration, start val, destination val
-void setAnimationParams(int32_t dur, int32_t start, int32_t end) {
-    ap.duration = dur;
-    ap.start_val = start;
-    ap.end_val = end;
-    ap.progress = 0;
+void setAnimationParams(int32_t dur, int32_t start, int32_t end, void (*curve)()) {
+    current_ap.duration = dur;
+    current_ap.start_val = start;
+    current_ap.end_val = end;
+    current_ap.progress = start;
+    current_ap.output = 0;
+    current_ap.curve = curve;
 }
-void setAnimationParams(anim_params &_ap) {
-    ap = _ap;
-}
-
-void setAnimationCurve(void * curve) {
-    current_animation = curve;
+void setAnimationParams(anim_params &_current_ap) {
+    current_ap = _current_ap;
 }
 
-float testdata[] = {1.0f,2.0f,3.0f,4.0f,5.0f,6.0f,7.0f,8.0f,7.0f,7.0f,6.0f,6.0f,5.0f,5.0f,6.0f,6.0f,9.0f};
+void resetAnimation(uint32_t animID) {
+    
+}
 
 void animation1() {
+    int32_t diff =  current_ap.end_val - current_ap.start_val;
+    current_ap.output = 5.0f * sin(current_ap.progress);
+    if (current_ap.progress != current_ap.duration) {
+        current_ap.progress++;
+    }
+}
 
+void animation2() {
+    int32_t diff =  current_ap.end_val - current_ap.start_val;
+    current_ap.output = pow(2,-current_ap.progress) * 100.0f * (sin((float)current_ap.progress * M_PI/(float)current_ap.duration));
+    if (current_ap.progress != current_ap.duration) {
+        current_ap.progress++;
+    }
+}
+
+void animation3() {
+    int32_t diff =  current_ap.end_val - current_ap.start_val;
+    current_ap.output = 5.0f * sin(current_ap.progress);
+    if (current_ap.progress != current_ap.duration) {
+        current_ap.progress++;
+    }
+}
+
+void animation4() {
+    static float anim_percent = curretn_ap_current_ap.duration
+    int32_t diff =  current_ap.end_val - current_ap.start_val;
+    current_ap.output = 5.0f * sin(current_ap.progress);
+    if (current_ap.progress != current_ap.duration) {
+        current_ap.progress++;
+    }
+}
+
+void animation5() {
+    int32_t diff =  current_ap.end_val - current_ap.start_val;
+    current_ap.output = 5.0f * sin(current_ap.progress);
+    if (current_ap.progress != current_ap.duration) {
+        current_ap.progress++;
+    }
+}
+
+void animate() {
+    // increment all animation curves by 1 and marke those that are done as complete;
 }
 
 void ShowAnimationDesignWindow(bool* p_open) {
@@ -58,14 +107,23 @@ void ShowAnimationDesignWindow(bool* p_open) {
 
     static anim_params_t params[5];
 
-
-
     if (first_run) {
-        params[0] = anim_params(50,0,20,0);
-        params[1] = anim_params(100,75,120,0);
-        params[2] = anim_params(25,10,20,0);
-        params[3] = anim_params(75,40,70,0);
-        params[4] = anim_params(50,10,50,0);
+        params[0] = anim_params(20, 0,  20, &animation1);
+        params[1] = anim_params(20,0,20, &animation2);
+        params[2] = anim_params(90,10,100, &animation3);
+        params[3] = anim_params(50,40,90, &animation4);
+        params[4] = anim_params(10,0,10, &animation5);
+        for (uint16_t anim_index = 0; anim_index < 5; anim_index++) {
+            testdata[anim_index].data = (float*)malloc(sizeof(float) * params[anim_index].duration);
+            testdata[anim_index].size = params[anim_index].duration;
+            setAnimationParams(params[anim_index]);
+            for (uint16_t step = 0; step <  current_ap.duration; step++) {
+                void (*anim)();
+                anim = current_ap.curve;
+                anim();
+                testdata[anim_index].data[step] = (float)current_ap.output;
+            }
+        }
         first_run = false;
     }
 
@@ -77,8 +135,15 @@ void ShowAnimationDesignWindow(bool* p_open) {
         return;
     }
 
+
+    // ImGui::Text("%3d ",testdata[0].size);
+    // for (int x = 0; x < testdata[0].size; x++) {
+    //     ImGui::Text("%3.2f ",testdata[0].data[x]); ImGui::SameLine();
+    // }
+    // ImGui::Text("---");
     for (int32_t dataindex = 0; dataindex < 5; dataindex++) {
-        ImGui::PlotLines("Anim", testdata, IM_ARRAYSIZE(testdata), 0, "avg 0.0", -2.0f, 10.0f, ImVec2(0,100));
+        ImGui::PlotLines("Anim", testdata[dataindex].data, testdata[dataindex].size, 1.0f, "-----", -10.0f, 10.0f, ImVec2(0,100));
+
     }
 
 
@@ -287,20 +352,20 @@ void drawBuffer( uint16_t pixel_size) {
     }
 }
 
-// Demonstrate using the low-level ImDrawList to draw custom shapes. 
+// Demonstrate using the low-level ImDrawList to draw custom shcurrent_apes. 
 void ShowMenuPrototypeWindow(bool* p_open)
 {
-    static int32_t spinner = 205;
+    static int32_t scroller = 150;
     static int32_t l1x1=0,l1y1=0,l1x2=0,l1y2=0,l2x1=0,l2y1=0,l2x2=0,l2y2=0;
     l1x1 = 80;
-    l1y1 = spinner;
+    l1y1 = scroller;
     l1x2 = 32;
     l1y2 = 47;
     
     l2x1 = 100;
     l2y1 = 200;
     l2x2 = 105;
-    l2y2 = spinner;   
+    l2y2 = scroller;   
 
     ImGui::SetNextWindowPos(ImVec2(530,35), ImGuiSetCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(700,800), ImGuiSetCond_FirstUseEver);
@@ -319,7 +384,11 @@ void ShowMenuPrototypeWindow(bool* p_open)
         static ImVector<ImVec2> points;
         static bool adding_line = false;
         ImGui::Text("MENU DESIGN");
-        if (ImGui::Button("Reset")) points.clear();ImGui::SameLine();
+        if (ImGui::Button("Reset")) {
+            points.clear();
+            scroller = 150;
+        }
+        ImGui::SameLine();
         if (pixel_size == 1) {
             if (ImGui::Button("Set 2X")) pixel_size = 2;
             ImGui::SameLine();
@@ -333,15 +402,15 @@ void ShowMenuPrototypeWindow(bool* p_open)
             ImGui::SameLine();
             ImGui::Text("\tCurrent Size: Dunno");
         }
-        ImGui::SliderInt("POS SLIDER", &spinner, 0, 300);
+        ImGui::SliderInt("POS SLIDER", &scroller, 0, 300);
         ImGui::SliderInt("FONT SIZE SLIDER", &font_size, 0, 10);
 
-        ImGui::Text("Spinner: %3d",spinner);
+        ImGui::Text("scroller: %3d",scroller);
 
         // Here we are using InvisibleButton() as a convenience to 1) advance the cursor and 2) allows us to use IsItemHovered()
         // However you can draw directly and poll mouse/keyboard by yourself. You can manipulate the cursor using GetCursorPos() and SetCursorPos().
-        // If you only use the ImDrawList API, you can notify the owner window of its extends by using SetCursorPos(max).
-        canvas_pos = ImGui::GetCursorScreenPos();            // ImDrawList API uses screen coordinates!
+        // If you only use the ImDrawList current_API, you can notify the owner window of its extends by using SetCursorPos(max).
+        canvas_pos = ImGui::GetCursorScreenPos();            // ImDrawList current_API uses screen coordinates!
         canvas_size = ImGui::GetContentRegionAvail();        // Resize canvas to what's available
         //printf("       \n----------------\n\ncanvas size x:%4f y:%4f \ncanvas pos x:%3f y:%3f  \n", canvas_size.x,canvas_size.y,canvas_pos.x, canvas_pos.y);      
 
@@ -391,7 +460,7 @@ void ShowMenuPrototypeWindow(bool* p_open)
 
         static char * test = "--TESTING--";
         static int16_t font_width = 6;
-        print(test,SCREEN_WIDTH/2 - (strlen(test)* font_size/2 * font_width),spinner,font_size);
+        print(test,SCREEN_WIDTH/2 - (strlen(test)* font_size/2 * font_width),scroller,font_size);
 
     //    drawLine(40,40,50,50);
     //     drawPixel(l1x1,l1y1);
@@ -406,8 +475,11 @@ void ShowMenuPrototypeWindow(bool* p_open)
 
         static int32_t margin = 15;
         static int32_t rec_height = 50;
-        drawRec(margin,SCREEN_HEIGHT/2 - (rec_height/2),SCREEN_WIDTH - margin,SCREEN_HEIGHT/2 + (rec_height/2));
-        //drawRec(170,spinner,spinner,250);
+        // drawRec(margin,SCREEN_HEIGHT/2 - (rec_height/2),SCREEN_WIDTH - margin,SCREEN_HEIGHT/2 + (rec_height/2));
+        drawRec(margin,SCREEN_HEIGHT/2 - (rec_height/2),SCREEN_WIDTH - margin,SCREEN_HEIGHT/2 - (rec_height/2)+3);
+        drawRec(margin, SCREEN_HEIGHT/2 + (rec_height/2) - 3,SCREEN_WIDTH - margin,SCREEN_HEIGHT/2 + (rec_height/2));
+
+        //drawRec(170,scroller,scroller,250);
 
         drawBuffer(pixel_size);
 

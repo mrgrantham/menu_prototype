@@ -38,6 +38,7 @@ ifeq ($(UNAME_S), Darwin) #APPLE
 	CXXFLAGS = -I../../ -I../libs/gl3w -I/usr/local/include
 	CXXFLAGS += -Wall -Wformat
 	CFLAGS = $(CXXFLAGS)
+	CXX = llvm-g++
 endif
 
 ifeq ($(UNAME_S), MINGW64_NT-6.3)
