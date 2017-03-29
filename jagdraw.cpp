@@ -4,12 +4,8 @@
 #include <stdio.h>
 #include "fonts.h"
 #include <math.h>
-
-#define SCREEN_WIDTH 240
-#define SCREEN_HEIGHT 320
-
-// #define SCREEN_WIDTH 128
-// #define SCREEN_HEIGHT 128
+#include "animate.hpp"
+#include "draw.hpp"
 
 #define IM_ARRAYSIZE(_ARR)  ((int)(sizeof(_ARR)/sizeof(*_ARR)))
 
@@ -18,301 +14,10 @@ static ImVec2 canvas_size;       // Resize canvas to what's available
 static ImDrawList* draw_list;
 static int pixel_size = 2;
 
-typedef struct anim_params{
-    int32_t duration;
-    int32_t start_val;
-    int32_t end_val;
-    int32_t progress;
-    int32_t output;
-    void (* curve)();
-    anim_params() { duration = 0; start_val = 0; end_val = 0; progress = 0; curve = NULL;}
-    anim_params(int32_t dur, int32_t start,int32_t end,void (* crv)()) { duration = dur; start_val = start; end_val = end; progress = start; curve = crv; }
-} anim_params_t;
-
-typedef struct d_array {
-    float *data;
-    uint16_t size;
-} d_array_t;
-
-anim_params_t current_ap;
-d_array_t testdata[5];
-
-// assumption of animation running 60Hz
-// each exectution of animate() function is 1 step in animation
-
-// configure duration, start val, destination val
-void setAnimationParams(int32_t dur, int32_t start, int32_t end, void (*curve)()) {
-    current_ap.duration = dur;
-    current_ap.start_val = start;
-    current_ap.end_val = end;
-    current_ap.progress = start;
-    current_ap.output = 0;
-    current_ap.curve = curve;
-}
-void setAnimationParams(anim_params &_current_ap) {
-    current_ap = _current_ap;
-}
-
-void resetAnimation(uint32_t animID) {
-    
-}
-
-void animation1() {
-    int32_t diff =  current_ap.end_val - current_ap.start_val;
-    current_ap.output = 5.0f * sin(current_ap.progress);
-    if (current_ap.progress != current_ap.duration) {
-        current_ap.progress++;
-    }
-}
-
-void animation2() {
-    int32_t diff =  current_ap.end_val - current_ap.start_val;
-    current_ap.output = pow(2,-current_ap.progress) * 100.0f * (sin((float)current_ap.progress * M_PI/(float)current_ap.duration));
-    if (current_ap.progress != current_ap.duration) {
-        current_ap.progress++;
-    }
-}
-
-void animation3() {
-    int32_t diff =  current_ap.end_val - current_ap.start_val;
-    current_ap.output = 5.0f * sin(current_ap.progress);
-    if (current_ap.progress != current_ap.duration) {
-        current_ap.progress++;
-    }
-}
-
-void animation4() {
-    static float anim_percent = curretn_ap_current_ap.duration
-    int32_t diff =  current_ap.end_val - current_ap.start_val;
-    current_ap.output = 5.0f * sin(current_ap.progress);
-    if (current_ap.progress != current_ap.duration) {
-        current_ap.progress++;
-    }
-}
-
-void animation5() {
-    int32_t diff =  current_ap.end_val - current_ap.start_val;
-    current_ap.output = 5.0f * sin(current_ap.progress);
-    if (current_ap.progress != current_ap.duration) {
-        current_ap.progress++;
-    }
-}
-
-void animate() {
-    // increment all animation curves by 1 and marke those that are done as complete;
-}
-
-void ShowAnimationDesignWindow(bool* p_open) {
-    static bool first_run = true;
-
-    static anim_params_t params[5];
-
-    if (first_run) {
-        params[0] = anim_params(20, 0,  20, &animation1);
-        params[1] = anim_params(20,0,20, &animation2);
-        params[2] = anim_params(90,10,100, &animation3);
-        params[3] = anim_params(50,40,90, &animation4);
-        params[4] = anim_params(10,0,10, &animation5);
-        for (uint16_t anim_index = 0; anim_index < 5; anim_index++) {
-            testdata[anim_index].data = (float*)malloc(sizeof(float) * params[anim_index].duration);
-            testdata[anim_index].size = params[anim_index].duration;
-            setAnimationParams(params[anim_index]);
-            for (uint16_t step = 0; step <  current_ap.duration; step++) {
-                void (*anim)();
-                anim = current_ap.curve;
-                anim();
-                testdata[anim_index].data[step] = (float)current_ap.output;
-            }
-        }
-        first_run = false;
-    }
-
-    ImGui::SetNextWindowPos(ImVec2(35,350), ImGuiSetCond_FirstUseEver);
-    ImGui::SetNextWindowSize(ImVec2(450,0), ImGuiSetCond_FirstUseEver);
-    if (!ImGui::Begin("Animation Design", p_open))
-    {
-        ImGui::End();
-        return;
-    }
-
-
-    // ImGui::Text("%3d ",testdata[0].size);
-    // for (int x = 0; x < testdata[0].size; x++) {
-    //     ImGui::Text("%3.2f ",testdata[0].data[x]); ImGui::SameLine();
-    // }
-    // ImGui::Text("---");
-    for (int32_t dataindex = 0; dataindex < 5; dataindex++) {
-        ImGui::PlotLines("Anim", testdata[dataindex].data, testdata[dataindex].size, 1.0f, "-----", -10.0f, 10.0f, ImVec2(0,100));
-
-    }
-
-
-    ImGui::End();
-}
-
-
-uint8_t screenBuffer[SCREEN_HEIGHT][SCREEN_WIDTH] = {{0}};
-
-void drawPixel(int32_t x,int32_t y, uint8_t color = 1) {
-    if(x < SCREEN_WIDTH && x >= 0 && y < SCREEN_HEIGHT && y >= 0) {
-        screenBuffer[y][x] = color;
-    }
-}
-
-void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
-    static int32_t xdiff;
-    static int32_t ydiff;
-
-    // get absolute value of x difference
-    if (x1 > x2) {
-        xdiff   = x1 - x2;
-    } else {
-        xdiff   = x2 - x1;
-    }
-
-    // get absolute value of y difference
-    if (y1 > y2) {
-        ydiff   = y1 - y2;
-    } else {
-        ydiff   = y2 - y1;
-    }
-
-    // ImGui::Text("XDIFF: %3d YDIFF: %3d",xdiff,ydiff);
-
-
-    static int32_t yinc = 0;
-    static int32_t xinc = 0;
-
-    static int32_t yend = 0;
-    static int32_t xend = 0;
-
-    static int32_t ycomp = 0;
-    static int32_t xcomp = 0;
-
-    ycomp = 0;
-    xcomp = 0;  
-
-    // X is the longer traversal
-    if (xdiff > ydiff) {
-        //ycomp = ydiff - xdiff; 
-        if (x1 < x2) {
-            xinc = x1;
-            yinc = y1;
-            xend = x2;
-            yend = y2;
-        } else {
-            xinc = x2;
-            yinc = y2;
-            xend = x1;
-            yend = y1;            
-        }
-        // ImGui::Text("Xinc: %3d Yinc: %3d",xinc,yinc);
-        // ImGui::Text("Xend: %3d Yend: %3d",xend,yend);       
-        for (; xinc <= xend; xinc++ ) {
-            ycomp += ydiff;
-            // ImGui::Text("xinc: %3d yinc: %3d xdiff: %3d ydiff: %3d xcomp: %3d ycomp: %3d\n",xinc,yinc,xdiff,ydiff,xcomp,ycomp);
-            if(ycomp >= xdiff) {
-                if (yinc < yend) {
-                    yinc++;
-                } else {
-                    yinc--;
-                }
-                ycomp -= xdiff;
-            }
-            drawPixel(xinc,yinc);
-        }
-    } else { // Y is the longer traversal
-        //xcomp = xdiff - ydiff; 
-        if (y1 < y2) {
-            xinc = x1;
-            yinc = y1;
-            xend = x2;
-            yend = y2;
-        } else {
-            xinc = x2;
-            yinc = y2;
-            xend = x1;
-            yend = y1;            
-        }
-        // ImGui::Text("Xinc: %3d Yinc: %3d",xinc,yinc);
-        // ImGui::Text("Xend: %3d Yend: %3d",xend,yend);      
-        for (; yinc < yend; yinc++ ) {
-            xcomp += xdiff;
-            // ImGui::Text("xinc: %3d yinc: %3d xdiff: %3d ydiff: %3d xcomp: %3d ycomp: %3d\n",xinc,yinc,xdiff,ydiff,xcomp,ycomp);
-            if(xcomp >= ydiff) {
-                if (xinc < xend) {
-                    xinc++;
-                } else {
-                    xinc--;
-                }                
-                xcomp -= ydiff;
-            }
-            drawPixel(xinc,yinc);
-        }
-
-    }
-
-}
-
-void drawRec(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
-    // x1y1 x2y1
-    drawLine( x1, y1, x2, y1);
-    // x1y1 x1y2
-    drawLine( x1, y1, x1, y2);
-    // x1y2 x2y2
-    drawLine( x1, y2, x2, y2);
-    // x2y1 x2y2
-    drawLine( x2, y1, x2, y2);
-}
-
-uint8_t * current_font;
 int32_t font_size=3;
 
-void drawChar(char letter, uint16_t xpos, uint16_t ypos, uint16_t size = 1){
-    static uint16_t index;
-    static uint16_t font_height = 8;
-    static uint16_t font_width = 6;
-    index = letter - 0x20;
-    static uint16_t row = 0;
-    static uint16_t col = 0;
-    static uint16_t px = 0;
-    static uint16_t py = 0;
-    for (col = 0; col < font_width; col++ ) {
-        for (row = 0; row < font_height; row++ ) {
-            static uint8_t pixel;
-            pixel = (current_font[(index * (font_width + 1)) + col] >> row) & 0x01;
-            for (px = 0; px < size; px++) {
-                for (py = 0; py < size; py++ ) {
-                    drawPixel(xpos + (col * size) + px,ypos + (row * size) + py,pixel);
-                }
-            }
-        }
-    }
-}
-
-void print(char * line, uint16_t xpos, uint16_t ypos,uint16_t size = 1) {
-    static uint8_t font_width = 6;
-    static uint16_t line_length;
-    line_length  = strlen(line);
-    for (uint16_t c = 0; c < line_length; c++) {
-        drawChar(line[c], xpos + (font_width * c * size),ypos,size);
-    }
-}
-
-void setFont(uint8_t *font){
-    current_font = font;
-}
-
-void clearScreen()
-{
-    for (int32_t pxrow = 0; pxrow < SCREEN_HEIGHT; pxrow++)
-    {
-        for (int32_t pxcol = 0; pxcol < SCREEN_WIDTH; pxcol++)
-        {
-            screenBuffer[pxrow][pxcol] = 0;
-        }
-    }
-}
+static Animation *anim_obj;
+d_array_t testdata[5];
 
 void drawBuffer( uint16_t pixel_size) {
     static ImVec2 draw_start;
@@ -351,6 +56,59 @@ void drawBuffer( uint16_t pixel_size) {
         }
     }
 }
+
+
+void ShowAnimationDesignWindow(bool* p_open) {
+    static bool first_run = true;
+
+    static anim_params_t params[5];
+
+    if (first_run) {
+        anim_obj = Animation::getInstance();
+        params[0] = anim_params(20, 0,  20, &Animation::animation1);
+        params[1] = anim_params(20,0,20, &Animation::animation2);
+        params[2] = anim_params(90,10,100, &Animation::animation3);
+        params[3] = anim_params(50,40,90, &Animation::animation4);
+        params[4] = anim_params(10,0,10, &Animation::animation5);
+        for (uint16_t anim_index = 0; anim_index < 5; anim_index++) {
+            testdata[anim_index].data = (float*)malloc(sizeof(float) * params[anim_index].duration);
+            testdata[anim_index].size = params[anim_index].duration;
+           anim_obj->setAnimationParams(params[anim_index]);
+            for (uint16_t step = 0; step <  anim_obj->current_ap.duration; step++) {
+                void (*anim)(anim_params_t &params);
+                anim = anim_obj->current_ap.curve;
+                anim(anim_obj->current_ap);
+                testdata[anim_index].data[step] = (float)anim_obj->current_ap.output;
+            }
+        }
+        first_run = false;
+    }
+
+    ImGui::SetNextWindowPos(ImVec2(35,350), ImGuiSetCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(450,0), ImGuiSetCond_FirstUseEver);
+    if (!ImGui::Begin("Animation Design", p_open))
+    {
+        ImGui::End();
+        return;
+    }
+
+
+    ImGui::Text("%3d ",testdata[3].size);
+    for (int x = 0; x < testdata[3].size; x++) {
+        ImGui::Text("%3.2f ",testdata[0].data[x]); ImGui::SameLine();
+    }
+    ImGui::Text("---");
+    for (int32_t dataindex = 0; dataindex < 5; dataindex++) {
+        float diff = params[dataindex].end_val - params[dataindex].start_val;
+        ImGui::PlotLines("Anim", testdata[dataindex].data, testdata[dataindex].size, 1.0f, "-----", (float)params[dataindex].start_val - (diff/10), (float)params[dataindex].end_val + (diff/10), ImVec2(0,100));
+
+    }
+
+
+    ImGui::End();
+}
+
+
 
 // Demonstrate using the low-level ImDrawList to draw custom shcurrent_apes. 
 void ShowMenuPrototypeWindow(bool* p_open)
@@ -448,15 +206,8 @@ void ShowMenuPrototypeWindow(bool* p_open)
             draw_list->AddLine(ImVec2(canvas_pos.x + points[i].x, canvas_pos.y + points[i].y), ImVec2(canvas_pos.x + points[i+1].x, canvas_pos.y + points[i+1].y), IM_COL32(255,255,0,255), 2.0f);
         draw_list->PopClipRect();
         clearScreen();
-        // drawPixel(20,50);
-        // drawPixel(120,160);
+
         setFont((uint8_t*)&homespun_font);
-        // drawChar(' ',100,150);
-        // drawChar('!',110,150);
-        // drawChar('"',120,150);
-        // drawChar('#',130,150);
-        // drawChar('$',140,150);
-        // drawChar('%',150,150);
 
         static char * test = "--TESTING--";
         static int16_t font_width = 6;

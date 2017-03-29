@@ -12,7 +12,7 @@
 #CXX = g++
 
 EXE = menu_proto
-OBJS = main.o jagdraw.o ./imgui/imgui_impl_glfw_gl3.o
+OBJS = main.o jagdraw.o animate.o draw.o ./imgui/imgui_impl_glfw_gl3.o
 OBJS += ./imgui/imgui.o ./imgui/imgui_demo.o ./imgui/imgui_draw.o
 OBJS += ./gl3w/GL/gl3w.o
 
@@ -33,12 +33,12 @@ ifeq ($(UNAME_S), Darwin) #APPLE
 	ECHO_MESSAGE = "Mac OS X"
 	LIBS = -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
 	#LIBS += -L/usr/local/lib -lglfw3
-	LIBS += -L/usr/local/lib -lglfw
+	LIBS += -L/usr/local/lib -lglfw 
 
 	CXXFLAGS = -I../../ -I../libs/gl3w -I/usr/local/include
 	CXXFLAGS += -Wall -Wformat
 	CFLAGS = $(CXXFLAGS)
-	CXX = llvm-g++
+	CXX = clang++
 endif
 
 ifeq ($(UNAME_S), MINGW64_NT-6.3)
