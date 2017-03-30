@@ -13,25 +13,49 @@ Animation *Animation::getInstance() {
     return singleton;
 }
 
+anim_params *Animation::getAnimationState(anim_id id) {
+    return &animations[id];
+}
 
 // assumption of animation running 60Hz
 // each exectution of animate() function is 1 step in animation
 
 // configure duration, start val, destination val
-void Animation::setAnimationParams(int32_t dur, int32_t start, int32_t end, void (*curve)(anim_params_t &params)) {
-    current_ap.duration = dur;
-    current_ap.start_val = start;
-    current_ap.end_val = end;
-    current_ap.progress = start;
-    current_ap.output = 0;
-    current_ap.curve = curve;
+
+anim_id Animation::setAnimationState(int32_t dur, int32_t start, int32_t end, void (*curve)(anim_params_t &state)) {
+    anim_id id = next_animation_id;
+    animations[id].duration = dur;
+    animations[id].start_val = start;
+    animations[id].end_val = end;
+    animations[id].progress = start;
+    animations[id].output = 0;
+    animations[id].curve = curve;
+    next_animation_id++;
+    return id;
 }
-void Animation::setAnimationParams(anim_params &_current_ap) {
-    current_ap = _current_ap;
+anim_id Animation::setAnimationState(anim_params &state) {
+    anim_id id = next_animation_id;
+    animations[id] = state;
+    return id;
 }
 
-void Animation::resetAnimation(uint32_t animID) {
-    
+void Animation::setAnimationState(anim_id id, int32_t dur, int32_t start, int32_t end, void (*curve)(anim_params_t &state)) {
+    animations[id].duration = dur;
+    animations[id].start_val = start;
+    animations[id].end_val = end;
+    animations[id].progress = start;
+    animations[id].output = 0;
+    animations[id].curve = curve;
+    next_animation_id++;
+}
+void Animation::setAnimationState(anim_id id, anim_params &state) {
+    animations[id] = state;
+}
+
+
+void Animation::resetAnimation(anim_id id) {
+    animations[id].progress = 0;
+    animations[id].complete = false;
 }
 
 void Animation::animation1(anim_params_t &params) {
@@ -42,8 +66,13 @@ void Animation::animation1(anim_params_t &params) {
 }
 
 void Animation::animation2(anim_params_t &params) {
-    params.output = pow(2,-params.progress) * 100.0f * (sin((float)params.progress * M_PI/(float)params.duration));
-    if (params.progress != params.duration) {
+    static float anim_percent;    
+    static float base_anim;
+    static float p = 0.2f;
+    anim_percent = (float)params.progress/(float)params.duration;
+    base_anim = pow(2,-10.0f * anim_percent) * sin((anim_percent-p/4.0f)*(2.0f * M_PI)/p) + 1.0f;;
+    params.output  = params.start_val + base_anim * ( params.end_val - params.start_val );
+    if (params.progress < params.duration) {
         params.progress++;
     }
 }
@@ -54,9 +83,20 @@ void Animation::animation3(anim_params_t &params) {
     static float base_anim;
 
     anim_percent = (float)params.progress/(float)params.duration;
-    base_anim = (anim_percent < 0.5f) ? pow(anim_percent,3.0f) : pow(1.0f-anim_percent,3.0f) ;
+    if (anim_percent < 0.5f) {
+        base_anim = (pow(anim_percent*2.0f,3.0f)/2.0f);
+    } else {
+        base_anim = 1.0f - (pow((1.0f-anim_percent)*2.0f,3.0f)/2.0f);
+    }
+    // printf("EIO: prog: %3d dur: %3d st: %3d end: %3d base_anim: %4.2f  anim_percent: %4.2f output: %3d\n",    params.progress,
+    //                                                                                                                     params.duration,
+    //                                                                                                                     params.start_val,
+    //                                                                                                                     params.end_val,
+    //                                                                                                                     base_anim,
+    //                                                                                                                     anim_percent,
+    //                                                                                                                     params.output);
     params.output  = params.start_val + base_anim * ( params.end_val - params.start_val );
-    if (params.progress != params.duration) {
+    if (params.progress < params.duration) {
         params.progress++;
     }
 }
@@ -69,7 +109,7 @@ void Animation::animation4(anim_params_t &params) {
     anim_percent = (float)params.progress/(float)params.duration;
     base_anim = pow(anim_percent,3.0f);
     params.output  = params.start_val + base_anim * ( params.end_val - params.start_val );
-    if (params.progress != params.duration) {
+    if (params.progress < params.duration) {
         params.progress++;
     }
 }
@@ -80,13 +120,21 @@ void Animation::animation5(anim_params_t &params) {
     static float base_anim;
 
     anim_percent = (float)params.progress/(float)params.duration;
-    base_anim = pow(1.0f-anim_percent,3.0f);
+    base_anim = 1.0f - pow(1.0f-anim_percent,3.0f);
     params.output  = params.start_val + base_anim * ( params.end_val - params.start_val );
-    if (params.progress != params.duration) {
+    if (params.progress < params.duration) {
         params.progress++;
     }
 }
 
 void Animation::animate() {
     // increment all animation curves by 1 and marke those that are done as complete;
+}
+
+void Animation::animate(anim_id id) {
+    if (animations[id].progress < animations[id].duration) {
+            (*animations[id].curve)(animations[id]);
+    } else {
+        animations[id].complete = true;
+    }
 }

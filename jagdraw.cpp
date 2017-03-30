@@ -37,8 +37,10 @@ void drawBuffer( uint16_t pixel_size) {
     for ( int32_t pxrow = 0; pxrow < SCREEN_HEIGHT; pxrow++ ) {
         for ( int32_t pxcol = 0; pxcol < SCREEN_WIDTH; pxcol++ ) {
             static ImColor px_color = ImColor(IM_COL32_WHITE);
-            ImVec2 upper_left = ImVec2(draw_start.x + (pxcol * pixel_size),draw_start.y + (pxrow * pixel_size));
-            ImVec2 bottom_right = ImVec2(draw_start.x + ((pxcol+1) * pixel_size) ,draw_start.y + ((pxrow+1) * pixel_size)  );
+            static ImVec2 upper_left;
+            static ImVec2 bottom_right;
+            upper_left = ImVec2(draw_start.x + (pxcol * pixel_size),draw_start.y + (pxrow * pixel_size));
+            bottom_right = ImVec2(draw_start.x + ((pxcol+1) * pixel_size) ,draw_start.y + ((pxrow+1) * pixel_size)  );
             //printf("       \n----------------\ndraw start x:%4f y:%4f \ncanvas size x:%4f y:%4f \ncanvas pos x:%3f y:%3f  \ndpxrow: %3d pxcol: %d\n", draw_start.x,draw_start.y,canvas_size.x,canvas_size.y,canvas_pos.x, canvas_pos.y,pxrow,pxcol);      
             if(screenBuffer[pxrow][pxcol]) {
                 px_color = ImColor(IM_COL32_WHITE);
@@ -60,27 +62,26 @@ void drawBuffer( uint16_t pixel_size) {
 
 void ShowAnimationDesignWindow(bool* p_open) {
     static bool first_run = true;
-
-    static anim_params_t params[5];
-
+    static anim_id params[5];
     if (first_run) {
         anim_obj = Animation::getInstance();
-        params[0] = anim_params(50, 0,  20, &Animation::animation1);
-        params[1] = anim_params(50,0,20, &Animation::animation2);
-        params[2] = anim_params(50,10,100, &Animation::animation3);
-        params[3] = anim_params(50,0,100, &Animation::animation4);
-        params[4] = anim_params(50,0,100, &Animation::animation5);
+        params[0] = anim_obj->setAnimationState(50,0,100, &Animation::animation1);
+        params[1] = anim_obj->setAnimationState(50,0,100, &Animation::animation2);
+        params[2] = anim_obj->setAnimationState(50,0,100, &Animation::animation3);
+        params[3] = anim_obj->setAnimationState(50,0,100, &Animation::animation4);
+        params[4] = anim_obj->setAnimationState(50,0,100, &Animation::animation5);
         for (uint16_t anim_index = 0; anim_index < 5; anim_index++) {
-            testdata[anim_index].data = (float*)malloc(sizeof(float) * params[anim_index].duration);
-            testdata[anim_index].size = params[anim_index].duration;
-           anim_obj->setAnimationParams(params[anim_index]);
-            for (uint16_t step = 0; step <  anim_obj->current_ap.duration; step++) {
+            anim_params_t * animation_state = anim_obj->getAnimationState(params[anim_index]);
+            testdata[anim_index].data = (float*)malloc(sizeof(float) * animation_state->duration);
+            testdata[anim_index].size = animation_state->duration;
+            for (uint16_t step = 0; step <  animation_state->duration; step++) {
                 void (*anim)(anim_params_t &params);
-                anim = anim_obj->current_ap.curve;
-                anim(anim_obj->current_ap);
-                testdata[anim_index].data[step] = (float)anim_obj->current_ap.output;
+                anim = animation_state->curve;
+                anim(*animation_state);
+                testdata[anim_index].data[step] = (float)animation_state->output;
             }
         }
+        // get id for 
         first_run = false;
     }
 
@@ -99,8 +100,8 @@ void ShowAnimationDesignWindow(bool* p_open) {
     // }
     // ImGui::Text("---");
     for (int32_t dataindex = 0; dataindex < 5; dataindex++) {
-        float diff = params[dataindex].end_val - params[dataindex].start_val;
-        ImGui::PlotLines("Anim", testdata[dataindex].data, testdata[dataindex].size, 1.0f, "-----", (float)params[dataindex].start_val - (diff/10.0f), (float)params[dataindex].end_val + (diff/10.0f), ImVec2(0,100));
+        float diff = anim_obj->getAnimationState(params[dataindex])->end_val - anim_obj->getAnimationState(params[dataindex])->start_val;
+        ImGui::PlotLines("Anim", testdata[dataindex].data, testdata[dataindex].size, 1.0f, "-----", (float)anim_obj->getAnimationState(params[dataindex])->start_val - (diff/3.0f), (float)anim_obj->getAnimationState(params[dataindex])->end_val + (diff/3.0f), ImVec2(0,110));
 
     }
 
@@ -113,6 +114,16 @@ void ShowAnimationDesignWindow(bool* p_open) {
 // Demonstrate using the low-level ImDrawList to draw custom shcurrent_apes. 
 void ShowMenuPrototypeWindow(bool* p_open)
 {
+    static bool first_run = true;
+    static anim_id test_animation;
+    static anim_params_t *scroller_state;
+    if (first_run) {
+        anim_obj = Animation::getInstance();
+        test_animation = anim_obj->setAnimationState(50,0,150, &Animation::animation2);
+        first_run = false;
+        scroller_state = anim_obj->getAnimationState(test_animation);
+
+    }
     static int32_t scroller = 150;
     static int32_t l1x1=0,l1y1=0,l1x2=0,l1y2=0,l2x1=0,l2y1=0,l2x2=0,l2y2=0;
     l1x1 = 80;
@@ -145,6 +156,7 @@ void ShowMenuPrototypeWindow(bool* p_open)
         if (ImGui::Button("Reset")) {
             points.clear();
             scroller = 150;
+            anim_obj->resetAnimation(test_animation);
         }
         ImGui::SameLine();
         if (pixel_size == 1) {
@@ -211,6 +223,16 @@ void ShowMenuPrototypeWindow(bool* p_open)
 
         const char * test = "--TESTING--";
         static int16_t font_width = 6;
+        if(!scroller_state->complete) {
+            printf("EIO: prog: %3d dur: %3d st: %3d end: %3d output: %3d",  scroller_state->progress,
+                                                                            scroller_state->duration,
+                                                                            scroller_state->start_val,
+                                                                            scroller_state->end_val,
+                                                                            scroller_state->output);
+            printf(" scroller: %3d\n",scroller);
+            anim_obj->animate(test_animation);
+            scroller = scroller_state->output;
+        }
         print((char *)test,SCREEN_WIDTH/2 - (strlen(test)* font_size/2 * font_width),scroller,font_size);
 
     //    drawLine(40,40,50,50);
