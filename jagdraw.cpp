@@ -65,11 +65,11 @@ void ShowAnimationDesignWindow(bool* p_open) {
 
     if (first_run) {
         anim_obj = Animation::getInstance();
-        params[0] = anim_params(20, 0,  20, &Animation::animation1);
-        params[1] = anim_params(20,0,20, &Animation::animation2);
-        params[2] = anim_params(90,10,100, &Animation::animation3);
-        params[3] = anim_params(50,40,90, &Animation::animation4);
-        params[4] = anim_params(10,0,10, &Animation::animation5);
+        params[0] = anim_params(50, 0,  20, &Animation::animation1);
+        params[1] = anim_params(50,0,20, &Animation::animation2);
+        params[2] = anim_params(50,10,100, &Animation::animation3);
+        params[3] = anim_params(50,0,100, &Animation::animation4);
+        params[4] = anim_params(50,0,100, &Animation::animation5);
         for (uint16_t anim_index = 0; anim_index < 5; anim_index++) {
             testdata[anim_index].data = (float*)malloc(sizeof(float) * params[anim_index].duration);
             testdata[anim_index].size = params[anim_index].duration;
@@ -93,14 +93,14 @@ void ShowAnimationDesignWindow(bool* p_open) {
     }
 
 
-    ImGui::Text("%3d ",testdata[3].size);
-    for (int x = 0; x < testdata[3].size; x++) {
-        ImGui::Text("%3.2f ",testdata[0].data[x]); ImGui::SameLine();
-    }
-    ImGui::Text("---");
+    // ImGui::Text("%3d ",testdata[3].size);
+    // for (int x = 0; x < testdata[3].size; x++) {
+    //     ImGui::Text("%3.2f ",testdata[0].data[x]); ImGui::SameLine();
+    // }
+    // ImGui::Text("---");
     for (int32_t dataindex = 0; dataindex < 5; dataindex++) {
         float diff = params[dataindex].end_val - params[dataindex].start_val;
-        ImGui::PlotLines("Anim", testdata[dataindex].data, testdata[dataindex].size, 1.0f, "-----", (float)params[dataindex].start_val - (diff/10), (float)params[dataindex].end_val + (diff/10), ImVec2(0,100));
+        ImGui::PlotLines("Anim", testdata[dataindex].data, testdata[dataindex].size, 1.0f, "-----", (float)params[dataindex].start_val - (diff/10.0f), (float)params[dataindex].end_val + (diff/10.0f), ImVec2(0,100));
 
     }
 
@@ -209,9 +209,9 @@ void ShowMenuPrototypeWindow(bool* p_open)
 
         setFont((uint8_t*)&homespun_font);
 
-        static char * test = "--TESTING--";
+        const char * test = "--TESTING--";
         static int16_t font_width = 6;
-        print(test,SCREEN_WIDTH/2 - (strlen(test)* font_size/2 * font_width),scroller,font_size);
+        print((char *)test,SCREEN_WIDTH/2 - (strlen(test)* font_size/2 * font_width),scroller,font_size);
 
     //    drawLine(40,40,50,50);
     //     drawPixel(l1x1,l1y1);

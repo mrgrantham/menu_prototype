@@ -48,8 +48,14 @@ void Animation::animation2(anim_params_t &params) {
     }
 }
 
+// cubic ease in and out
 void Animation::animation3(anim_params_t &params) {
-    params.output = 5.0f * sin(params.progress);
+    static float anim_percent;    
+    static float base_anim;
+
+    anim_percent = (float)params.progress/(float)params.duration;
+    base_anim = (anim_percent < 0.5f) ? pow(anim_percent,3.0f) : pow(1.0f-anim_percent,3.0f) ;
+    params.output  = params.start_val + base_anim * ( params.end_val - params.start_val );
     if (params.progress != params.duration) {
         params.progress++;
     }
@@ -68,8 +74,14 @@ void Animation::animation4(anim_params_t &params) {
     }
 }
 
+// cubic ease out
 void Animation::animation5(anim_params_t &params) {
-    params.output = 5.0f * sin(params.progress);
+    static float anim_percent;    
+    static float base_anim;
+
+    anim_percent = (float)params.progress/(float)params.duration;
+    base_anim = pow(1.0f-anim_percent,3.0f);
+    params.output  = params.start_val + base_anim * ( params.end_val - params.start_val );
     if (params.progress != params.duration) {
         params.progress++;
     }
