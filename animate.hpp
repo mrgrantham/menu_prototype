@@ -3,6 +3,7 @@
 #define ANIMATE_HPP
 
 #include <iostream>
+#include <stdint.h>
 
 using namespace std;
 

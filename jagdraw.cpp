@@ -6,6 +6,7 @@
 #include <math.h>
 #include "animate.hpp"
 #include "draw.hpp"
+#include <stdlib.h>
 
 #define IM_ARRAYSIZE(_ARR)  ((int)(sizeof(_ARR)/sizeof(*_ARR)))
 
