@@ -7,6 +7,7 @@
 #include "animate.hpp"
 #include "draw.hpp"
 #include <stdlib.h>
+#include "textFrame.hpp"
 
 #define IM_ARRAYSIZE(_ARR)  ((int)(sizeof(_ARR)/sizeof(*_ARR)))
 

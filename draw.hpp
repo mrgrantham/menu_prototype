@@ -11,12 +11,22 @@
 #include <stdint.h>
 #include "imgui/imgui.h"
 #include "fonts.h"
+#include "stdint.h"
 
 #define SCREEN_WIDTH 240
 #define SCREEN_HEIGHT 320
 
 // #define SCREEN_WIDTH 128
 // #define SCREEN_HEIGHT 128
+
+typedef struct Point {
+    uint32_t x;
+    uint32_t y;
+    Point() : x(0), y(0) {};
+    Point(uint32_t x, uint32_t y) : x(x), y(y) {};
+    Point(uint32_t value) : x(value), y(value) {};
+    Point &operator=(Point &p) {this->x = p.x; this->y = p.y; return *this;}
+} Point;
 
 extern uint8_t screenBuffer[SCREEN_HEIGHT][SCREEN_WIDTH]; 
 extern uint8_t * current_font;
