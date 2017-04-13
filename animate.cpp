@@ -1,7 +1,7 @@
 
 #include "animate.hpp"
 #include <math.h>
-
+#include <stdio.h>
 
 Animation *Animation::singleton = NULL;
 
@@ -36,26 +36,39 @@ anim_id Animation::setAnimationState(int32_t dur, int32_t start, int32_t end, vo
 anim_id Animation::setAnimationState(anim_params &state) {
     anim_id id = next_animation_id;
     animations[id] = state;
+    next_animation_id++;
+
     return id;
 }
 
 void Animation::setAnimationState(anim_id id, int32_t dur, int32_t start, int32_t end, void (*curve)(anim_params_t &state)) {
-    animations[id].duration = dur;
-    animations[id].start_val = start;
-    animations[id].end_val = end;
-    animations[id].progress = start;
-    animations[id].output = 0;
-    animations[id].curve = curve;
-    next_animation_id++;
+    if (id < next_animation_id) {
+        animations[id].duration = dur;
+        animations[id].start_val = start;
+        animations[id].end_val = end;
+        animations[id].progress = start;
+        animations[id].output = 0;
+        animations[id].curve = curve;
+    } else {
+        printf("invalid animation id\n");
+    }
 }
 void Animation::setAnimationState(anim_id id, anim_params &state) {
-    animations[id] = state;
+    if (id < next_animation_id) {
+        animations[id] = state;
+    } else {
+        printf("invalid animation id\n");
+    }
 }
 
 
 void Animation::resetAnimation(anim_id id) {
+    if (id < next_animation_id) {
     animations[id].progress = 0;
     animations[id].complete = false;
+    } else {
+        printf("invalid animation id\n");
+    }
 }
 
 void Animation::animation1(anim_params_t &params) {

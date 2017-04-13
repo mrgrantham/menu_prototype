@@ -4,25 +4,21 @@
 
 #include "imgui/imgui.h"
 #include "draw.hpp"
+#include "ViewFrame.hpp"
 
-typedef uint32_t frame_id;
 
-class TextFrame {
-    frame_id id;
-    Point size;
-    Point position;
-    bool visible;
+class TextFrame : public ViewFrame {
     char text[32];
-    anim_id anim;
 public:
     TextFrame();
-    TextFrame(Point _size, Point _position,const char *text);
+    TextFrame(Point _size, Point _position);
+    TextFrame(Point _size, Point _position,const char *_text);
     void setSize(Point &_size);
     void setPosition(Point &_position);
     void setPosition(int32_t x, int32_t y);
     void setX(int32_t x);
     void setY(int32_t y);
-    void setText(char *_text);
+    void setText(const char *_text);
     Point& getSize();
     Point& getPosition();
     ~TextFrame();

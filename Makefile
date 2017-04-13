@@ -12,9 +12,9 @@
 #CXX = g++
 
 EXE = menu_proto
-OBJS = main.o jagdraw.o animate.o draw.o ./imgui/imgui_impl_glfw_gl3.o
+OBJS = main.o jagdraw.o animate.o draw.o FrameManager.o ViewFrame.o TextFrame.o DrawFrame.o ScrollFrame.o ./imgui/imgui_impl_glfw_gl3.o
 OBJS += ./imgui/imgui.o ./imgui/imgui_demo.o ./imgui/imgui_draw.o
-OBJS += ./gl3w/GL/gl3w.o
+OBJS += ./gl3w/GL/gl3w.o 
 
 UNAME_S := $(shell uname -s)
 
