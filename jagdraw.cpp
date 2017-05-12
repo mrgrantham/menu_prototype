@@ -25,7 +25,7 @@ int32_t font_size=3;
 static Animation *anim_obj;
 d_array_t testdata[5];
 
-void drawBuffer( uint16_t pixel_size) {
+void Screen::drawBuffer( uint16_t pixel_size) {
     static ImVec2 draw_start;
     draw_start.x = canvas_pos.x + ( (canvas_size.x - (pixel_size * SCREEN_WIDTH)) / 2 );
     draw_start.y = canvas_pos.y + ( (canvas_size.y - (pixel_size * SCREEN_HEIGHT)) / 2 );
@@ -223,9 +223,13 @@ void ShowMenuPrototypeWindow(bool* p_open)
         for (int i = 0; i < points.Size - 1; i += 2)
             draw_list->AddLine(ImVec2(canvas_pos.x + points[i].x, canvas_pos.y + points[i].y), ImVec2(canvas_pos.x + points[i+1].x, canvas_pos.y + points[i+1].y), IM_COL32(255,255,0,255), 2.0f);
         draw_list->PopClipRect();
-        clearScreen();
+        
+        // ---------- BEGIN Screen Simulation Draw Routines ------------ //
 
-        setFont((uint8_t*)&homespun_font);
+        static Screen mainScreen;
+
+        clearScreen(mainScreen);
+        setFont(mainScreen,(uint8_t*)&homespun_font);
 
         const char * test = "--TESTING--";
         static int16_t font_width = 6;
@@ -239,7 +243,7 @@ void ShowMenuPrototypeWindow(bool* p_open)
             anim_obj->animate(test_animation);
             scroller = scroller_state->output;
         }
-        print((char *)test,SCREEN_WIDTH/2 - (strlen(test)* font_size/2 * font_width),scroller,font_size);
+        print(mainScreen,(char *)test,SCREEN_WIDTH/2 - (strlen(test)* font_size/2 * font_width),scroller,font_size);
 
     //    drawLine(40,40,50,50);
     //     drawPixel(l1x1,l1y1);
@@ -255,12 +259,14 @@ void ShowMenuPrototypeWindow(bool* p_open)
         static int32_t margin = 15;
         static int32_t rec_height = 50;
         // drawRec(margin,SCREEN_HEIGHT/2 - (rec_height/2),SCREEN_WIDTH - margin,SCREEN_HEIGHT/2 + (rec_height/2));
-        drawRec(margin,SCREEN_HEIGHT/2 - (rec_height/2),SCREEN_WIDTH - margin,SCREEN_HEIGHT/2 - (rec_height/2)+3);
-        drawRec(margin, SCREEN_HEIGHT/2 + (rec_height/2) - 3,SCREEN_WIDTH - margin,SCREEN_HEIGHT/2 + (rec_height/2));
+        drawRec(mainScreen,margin,SCREEN_HEIGHT/2 - (rec_height/2),SCREEN_WIDTH - margin,SCREEN_HEIGHT/2 - (rec_height/2)+3);
+        drawRec(mainScreen,margin, SCREEN_HEIGHT/2 + (rec_height/2) - 3,SCREEN_WIDTH - margin,SCREEN_HEIGHT/2 + (rec_height/2));
 
         //drawRec(170,scroller,scroller,250);
+        mainScreen.drawBuffer(pixel_size);
 
-        drawBuffer(pixel_size);
+        // ---------- END Screen Simulation Draw Routines ------------ //
+
 
         if (adding_preview)
             points.pop_back();
