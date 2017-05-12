@@ -12,6 +12,7 @@ class ViewFrame {
     Point size;
     Point position;
     anim_id anim;
+    Screen *_screen;
     
     public:
     bool active;

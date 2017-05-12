@@ -65,6 +65,17 @@ void Screen::drawBuffer( uint16_t pixel_size) {
     }
 }
 
+void Screen::clear()
+{
+    for (int32_t pxrow = 0; pxrow < SCREEN_HEIGHT; pxrow++)
+    {
+        for (int32_t pxcol = 0; pxcol < SCREEN_WIDTH; pxcol++)
+        {
+            screenBuffer[pxrow][pxcol] = 0;
+        }
+    }
+}
+
 
 void ShowAnimationDesignWindow(bool* p_open) {
     static bool first_run = true;
@@ -226,9 +237,9 @@ void ShowMenuPrototypeWindow(bool* p_open)
         
         // ---------- BEGIN Screen Simulation Draw Routines ------------ //
 
-        static Screen mainScreen;
+        static Screen *mainScreen = new Screen();
 
-        clearScreen(mainScreen);
+        mainScreen->clear();
         setFont(mainScreen,(uint8_t*)&homespun_font);
 
         const char * test = "--TESTING--";
@@ -263,7 +274,7 @@ void ShowMenuPrototypeWindow(bool* p_open)
         drawRec(mainScreen,margin, SCREEN_HEIGHT/2 + (rec_height/2) - 3,SCREEN_WIDTH - margin,SCREEN_HEIGHT/2 + (rec_height/2));
 
         //drawRec(170,scroller,scroller,250);
-        mainScreen.drawBuffer(pixel_size);
+        mainScreen->drawBuffer(pixel_size);
 
         // ---------- END Screen Simulation Draw Routines ------------ //
 
@@ -320,14 +331,14 @@ void ShowScrollTestWindow(bool * p_open) {
     // Platform Independant Drawing
     // ----------------------------
     {
-        FrameManager *manager;
-        clearScreen();
-
+        static FrameManager *manager;
+        static Screen *mainScreen;
         static bool first_time = true;
 
         if (first_time) {
-            setFont((uint8_t*)&homespun_font);
-            manager = new FrameManager();
+            mainScreen = new Screen();
+            manager = new FrameManager(mainScreen);
+            setFont(mainScreen,(uint8_t*)&homespun_font);
             DrawFrame *rec1 = new DrawFrame();
             DrawFrame *rec2 = new DrawFrame();
             TextFrame *txt = new TextFrame();
@@ -338,17 +349,19 @@ void ShowScrollTestWindow(bool * p_open) {
             first_time = false;
         }
 
+        mainScreen->clear();
+
         static const char * test = "--TESTING--";
         static int16_t font_width = 6;
 
-        print((char *)test,SCREEN_WIDTH/2 - (strlen(test)* font_size/2 * font_width),scroller,font_size);
+        print(mainScreen,(char *)test,SCREEN_WIDTH/2 - (strlen(test)* font_size/2 * font_width),scroller,font_size);
 
         static int32_t margin = 15;
         static int32_t rec_height = 50;
-        drawRec(margin,SCREEN_HEIGHT/2 - (rec_height/2),SCREEN_WIDTH - margin,SCREEN_HEIGHT/2 - (rec_height/2)+3);
-        drawRec(margin, SCREEN_HEIGHT/2 + (rec_height/2) - 3,SCREEN_WIDTH - margin,SCREEN_HEIGHT/2 + (rec_height/2));
+        drawRec(mainScreen, margin,SCREEN_HEIGHT/2 - (rec_height/2),SCREEN_WIDTH - margin,SCREEN_HEIGHT/2 - (rec_height/2)+3);
+        drawRec(mainScreen,margin, SCREEN_HEIGHT/2 + (rec_height/2) - 3,SCREEN_WIDTH - margin,SCREEN_HEIGHT/2 + (rec_height/2));
 
-        drawBuffer(pixel_size);
+        mainScreen->drawBuffer(pixel_size);
 
     }
     // ----------------------------

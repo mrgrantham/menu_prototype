@@ -27,13 +27,13 @@ typedef struct Point {
 // extern uint8_t screenBuffer[SCREEN_HEIGHT][SCREEN_WIDTH]; 
 // extern uint8_t * current_font;
 
-void drawPixel( Screen &screen, int32_t x,int32_t y, uint8_t color = 1);
-void drawLine( Screen &screen, int32_t x1, int32_t y1, int32_t x2, int32_t y2);
-void drawRec( Screen &screen, int32_t x1, int32_t y1, int32_t x2, int32_t y2);
-void drawChar( Screen &screen, char letter, uint16_t xpos, uint16_t ypos, uint16_t size = 1);
-void print( Screen &screen, char * line, uint16_t xpos, uint16_t ypos,uint16_t size = 1);
-void setFont( Screen &screen, uint8_t *font);
-void clearScreen( Screen &screen);
+void drawPixel( Screen *screen, int32_t x,int32_t y, uint8_t color = 1);
+void drawLine( Screen *screen, int32_t x1, int32_t y1, int32_t x2, int32_t y2);
+void drawRec( Screen *screen, int32_t x1, int32_t y1, int32_t x2, int32_t y2);
+void drawChar( Screen *screen, char letter, uint16_t xpos, uint16_t ypos, uint16_t size = 1);
+void print( Screen *screen, char * line, uint16_t xpos, uint16_t ypos,uint16_t size = 1);
+void setFont( Screen *screen, uint8_t *font);
+void clearScreen( Screen *screen);
 // void drawBuffer( uint16_t pixel_size);
 
 

@@ -16,6 +16,7 @@ class Screen {
     uint8_t screenBuffer[SCREEN_HEIGHT][SCREEN_WIDTH] = {{0}};
     uint8_t * current_font = 0;
     void drawBuffer(uint16_t pixel_size);
+    void clear();
 };
 
 void ShowAnimationDesignWindow(bool* p_open);

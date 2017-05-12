@@ -1,8 +1,8 @@
 
 #include "FrameManager.hpp"
+#include <stdio.h>
 
-
-    FrameManager::FrameManager() {
+    FrameManager::FrameManager(Screen *screen) {
 
     }    
     

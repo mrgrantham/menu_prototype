@@ -17,7 +17,7 @@ class FrameManager {
     ViewFrame *frames[32]; 
     frame_id next_frame_id;
 public:
-    FrameManager();
+    FrameManager(Screen *screen);
     frame_id addFrame(ViewFrame *frame);
     bool delFrame(frame_id id);
     bool activateFrame(frame_id id);    // indicates whether frame should be drawn  

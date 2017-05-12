@@ -1,5 +1,6 @@
 
 #include "ViewFrame.hpp"
+    // Screen *_screen;
 
 ViewFrame::ViewFrame() {
 
@@ -11,5 +12,5 @@ ViewFrame::ViewFrame(Point _size, Point _position) {
 }
 
 void ViewFrame::setScreen(Screen *screen) {
-    _screen - &screen;
+    _screen = screen;
 }

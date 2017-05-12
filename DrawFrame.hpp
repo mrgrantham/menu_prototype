@@ -8,6 +8,10 @@
 
 class DrawFrame : public ViewFrame {
 
+    public:
+    DrawFrame();
+    void draw();
+
 };
 
 
