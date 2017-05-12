@@ -33,6 +33,10 @@ void TextFrame::setText(const char *_text) {
     }
 }
 
+void TextFrame::draw() {
+    
+}
+
 Point& TextFrame::getSize() {
 
 }

@@ -5,20 +5,20 @@
 #include "draw.hpp"
 #include "animate.hpp"
 
-typedef uint32_t frame_id;
+typedef int32_t frame_id;
 
 class ViewFrame {
     frame_id id;
     Point size;
     Point position;
-    bool visible;
-    char text[32];
     anim_id anim;
     
     public:
+    bool active;
     ViewFrame();
     ViewFrame(Point _size, Point _position);
-    //virtual void draw(void); // every frame must be able to draw itself
+    void setScreen(Screen *screen);
+    virtual void draw(void) = 0; // every frame must be able to draw itself
 
 };
 

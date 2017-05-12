@@ -7,16 +7,13 @@
 
 #include "draw.hpp"
 
-uint8_t screenBuffer[SCREEN_HEIGHT][SCREEN_WIDTH] = {{0}};
-uint8_t * current_font = 0;
-
-void drawPixel(int32_t x,int32_t y, uint8_t color) {
+void drawPixel(Screen &screen, int32_t x,int32_t y, uint8_t color) {
     if(x < SCREEN_WIDTH && x >= 0 && y < SCREEN_HEIGHT && y >= 0) {
-        screenBuffer[y][x] = color;
+        screen.screenBuffer[y][x] = color;
     }
 }
 
-void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
+void drawLine(Screen &screen, int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
     static int32_t xdiff;
     static int32_t ydiff;
 
@@ -76,7 +73,7 @@ void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
                 }
                 ycomp -= xdiff;
             }
-            drawPixel(xinc,yinc);
+            drawPixel(screen, xinc,yinc);
         }
     } else { // Y is the longer traversal
         //xcomp = xdiff - ydiff; 
@@ -104,27 +101,27 @@ void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
                 }                
                 xcomp -= ydiff;
             }
-            drawPixel(xinc,yinc);
+            drawPixel(screen, xinc,yinc);
         }
 
     }
 
 }
 
-void drawRec(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
+void drawRec(Screen &screen, int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
     // x1y1 x2y1
-    drawLine( x1, y1, x2, y1);
+    drawLine(screen, x1, y1, x2, y1);
     // x1y1 x1y2
-    drawLine( x1, y1, x1, y2);
+    drawLine(screen, x1, y1, x1, y2);
     // x1y2 x2y2
-    drawLine( x1, y2, x2, y2);
+    drawLine(screen, x1, y2, x2, y2);
     // x2y1 x2y2
-    drawLine( x2, y1, x2, y2);
+    drawLine(screen, x2, y1, x2, y2);
 }
 
 
 
-void drawChar(char letter, uint16_t xpos, uint16_t ypos, uint16_t size){
+void drawChar(Screen &screen, char letter, uint16_t xpos, uint16_t ypos, uint16_t size){
     static uint16_t index;
     static uint16_t font_height = 8;
     static uint16_t font_width = 6;
@@ -136,36 +133,36 @@ void drawChar(char letter, uint16_t xpos, uint16_t ypos, uint16_t size){
     for (col = 0; col < font_width; col++ ) {
         for (row = 0; row < font_height; row++ ) {
             static uint8_t pixel;
-            pixel = (current_font[(index * (font_width + 1)) + col] >> row) & 0x01;
+            pixel = (screen.current_font[(index * (font_width + 1)) + col] >> row) & 0x01;
             for (px = 0; px < size; px++) {
                 for (py = 0; py < size; py++ ) {
-                    drawPixel(xpos + (col * size) + px,ypos + (row * size) + py,pixel);
+                    drawPixel(screen, xpos + (col * size) + px,ypos + (row * size) + py,pixel);
                 }
             }
         }
     }
 }
 
-void print(char * line, uint16_t xpos, uint16_t ypos,uint16_t size) {
+void print(Screen &screen, char * line, uint16_t xpos, uint16_t ypos,uint16_t size) {
     static uint8_t font_width = 6;
     static uint16_t line_length;
     line_length  = strlen(line);
     for (uint16_t c = 0; c < line_length; c++) {
-        drawChar(line[c], xpos + (font_width * c * size),ypos,size);
+        drawChar( screen, line[c], xpos + (font_width * c * size),ypos,size);
     }
 }
 
-void setFont(uint8_t *font){
-    current_font = font;
+void setFont( Screen &screen, uint8_t *font){
+    screen.current_font = font;
 }
 
-void clearScreen()
+void clearScreen( Screen &screen)
 {
     for (int32_t pxrow = 0; pxrow < SCREEN_HEIGHT; pxrow++)
     {
         for (int32_t pxcol = 0; pxcol < SCREEN_WIDTH; pxcol++)
         {
-            screenBuffer[pxrow][pxcol] = 0;
+            screen.screenBuffer[pxrow][pxcol] = 0;
         }
     }
 }

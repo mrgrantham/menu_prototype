@@ -19,6 +19,7 @@ public:
     void setX(int32_t x);
     void setY(int32_t y);
     void setText(const char *_text);
+    void draw();
     Point& getSize();
     Point& getPosition();
     ~TextFrame();
