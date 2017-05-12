@@ -7,7 +7,11 @@
 #include "animate.hpp"
 #include "draw.hpp"
 #include <stdlib.h>
+
+#include "FrameManager.hpp"
 #include "TextFrame.hpp"
+#include "DrawFrame.hpp"
+
 
 #define IM_ARRAYSIZE(_ARR)  ((int)(sizeof(_ARR)/sizeof(*_ARR)))
 
@@ -262,4 +266,92 @@ void ShowMenuPrototypeWindow(bool* p_open)
             points.pop_back();
     }
     ImGui::End();
+}
+
+void ShowScrollTestWindow(bool * p_open) {
+
+    // sets vertical positioning of items in  frame
+    static int32_t scroller = 150;
+
+    static bool first_run = true;
+    static anim_id test_animation;
+    static anim_params_t *scroller_state;
+    if (first_run) {
+        anim_obj = Animation::getInstance();
+        test_animation = anim_obj->setAnimationState(50,0,150, &Animation::animation2);
+        first_run = false;
+        scroller_state = anim_obj->getAnimationState(test_animation);
+
+    }
+
+    ImGui::SetNextWindowPos(ImVec2(530,35), ImGuiSetCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(700,800), ImGuiSetCond_FirstUseEver);
+    if (!ImGui::Begin("Menu Scroll", p_open))
+    {
+        ImGui::End();
+        return;
+    }
+
+    draw_list = ImGui::GetWindowDrawList();
+
+    ImGui::Text("MENU DESIGN");
+    if (ImGui::Button("Reset")) {
+        scroller = 150;
+        anim_obj->resetAnimation(test_animation);
+    }
+    ImGui::SameLine;
+    ImGui::SliderInt("POS SLIDER", &scroller, 0, 300);
+
+    canvas_pos = ImGui::GetCursorScreenPos();            // ImDrawList current_API uses screen coordinates!
+    canvas_size = ImGui::GetContentRegionAvail();        // Resize canvas to what's available
+
+    if (canvas_size.x < 50.0f) canvas_size.x = 50.0f; // ensure the canvas size is at least 50 wide by 50 tall
+    if (canvas_size.y < 50.0f) canvas_size.y = 50.0f;
+    draw_list->AddRectFilledMultiColor(canvas_pos, ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y), ImColor(0,0,0), ImColor(0,0,0), ImColor(0,0,0), ImColor(0,0,0));
+    draw_list->AddRect(canvas_pos, ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y), ImColor(255,255,255));
+
+    // ----------------------------
+    // Platform Independant Drawing
+    // ----------------------------
+    {
+        FrameManager *manager;
+        clearScreen();
+
+        static bool first_time = true;
+
+        if (first_time) {
+            setFont((uint8_t*)&homespun_font);
+            manager = new FrameManager();
+            DrawFrame *rec1 = new DrawFrame();
+            DrawFrame *rec2 = new DrawFrame();
+            TextFrame *txt = new TextFrame();
+            manager->addFrame((ViewFrame*)rec1);
+            manager->addFrame((ViewFrame*)rec2);
+            manager->addFrame((ViewFrame*)txt);
+
+            first_time = false;
+        }
+
+        static const char * test = "--TESTING--";
+        static int16_t font_width = 6;
+
+        print((char *)test,SCREEN_WIDTH/2 - (strlen(test)* font_size/2 * font_width),scroller,font_size);
+
+        static int32_t margin = 15;
+        static int32_t rec_height = 50;
+        drawRec(margin,SCREEN_HEIGHT/2 - (rec_height/2),SCREEN_WIDTH - margin,SCREEN_HEIGHT/2 - (rec_height/2)+3);
+        drawRec(margin, SCREEN_HEIGHT/2 + (rec_height/2) - 3,SCREEN_WIDTH - margin,SCREEN_HEIGHT/2 + (rec_height/2));
+
+        drawBuffer(pixel_size);
+
+    }
+    // ----------------------------
+    // End  Drawing
+    // ----------------------------
+
+
+
+    ImGui::End();
+
+
 }

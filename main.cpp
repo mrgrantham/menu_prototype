@@ -76,8 +76,10 @@ int main(int, char**)
 
         bool rendering_window=false;
         bool animation_window=false;
+        bool scroll_window=false;
         ShowMenuPrototypeWindow(&rendering_window);
         ShowAnimationDesignWindow(&animation_window);
+        ShowScrollTestWindow(&scroll_window);
 
         // 2. Show another simple window, this time using an explicit Begin/End pair
 
