@@ -2,13 +2,16 @@
 #include "FrameManager.hpp"
 #include <stdio.h>
 
-    FrameManager::FrameManager(Screen *screen) {
 
+    FrameManager::FrameManager(Screen *screen) {
+        next_frame_id = 0;
+        _screen = screen;
     }    
     
     frame_id FrameManager::addFrame(ViewFrame *frame) {
         frame_id id = next_frame_id;
         frames[id] = frame;
+        next_frame_id++;
         return id;
     }
 
@@ -31,7 +34,7 @@
         return true;
     }
     bool FrameManager::deactivateFrame(frame_id id) {
-        frames[id]->active = true;  
+        frames[id]->active = false;  
         return true;
     }
 

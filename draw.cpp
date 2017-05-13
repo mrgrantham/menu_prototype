@@ -9,7 +9,11 @@
 
 void drawPixel(Screen *screen, int32_t x,int32_t y, uint8_t color) {
     if(x < SCREEN_WIDTH && x >= 0 && y < SCREEN_HEIGHT && y >= 0) {
+#ifndef BITBUFFER
         screen->screenBuffer[y][x] = color;
+#else
+
+#endif
     }
 }
 
@@ -156,14 +160,5 @@ void setFont( Screen *screen, uint8_t *font){
     screen->current_font = font;
 }
 
-void clearScreen( Screen *screen)
-{
-    for (int32_t pxrow = 0; pxrow < SCREEN_HEIGHT; pxrow++)
-    {
-        for (int32_t pxcol = 0; pxcol < SCREEN_WIDTH; pxcol++)
-        {
-            screen->screenBuffer[pxrow][pxcol] = 0;
-        }
-    }
-}
+
 

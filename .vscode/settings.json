@@ -5,6 +5,8 @@
         "slist": "cpp",
         "initializer_list": "cpp",
         "utility": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "*.ipp": "cpp",
+        "system_error": "cpp"
     }
 }

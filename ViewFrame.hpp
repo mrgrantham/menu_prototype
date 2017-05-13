@@ -9,8 +9,8 @@ typedef int32_t frame_id;
 
 class ViewFrame {
     frame_id id;
-    Point size;
-    Point position;
+    Point size;     
+    Point position; // absolute coordinates
     anim_id anim;
     Screen *_screen;
     

@@ -11,71 +11,67 @@
 #include "FrameManager.hpp"
 #include "TextFrame.hpp"
 #include "DrawFrame.hpp"
-
+#include "Screen.hpp"
 
 #define IM_ARRAYSIZE(_ARR)  ((int)(sizeof(_ARR)/sizeof(*_ARR)))
 
-static ImVec2 canvas_pos;            // ImDrawList current_API uses screen coordinates!
-static ImVec2 canvas_size;       // Resize canvas to what's available
-static ImDrawList* draw_list;
-static int pixel_size = 2;
 
+static ImDrawList* draw_list;
 int32_t font_size=3;
 
 static Animation *anim_obj;
 d_array_t testdata[5];
 
-void Screen::drawBuffer( uint16_t pixel_size) {
-    static ImVec2 draw_start;
-    draw_start.x = canvas_pos.x + ( (canvas_size.x - (pixel_size * SCREEN_WIDTH)) / 2 );
-    draw_start.y = canvas_pos.y + ( (canvas_size.y - (pixel_size * SCREEN_HEIGHT)) / 2 );
+
+ImVec2 canvas_pos;            // ImDrawList current_API uses screen coordinates!
+ImVec2 canvas_size;       // Resize canvas to what's available
+int pixel_size = 2;
+static ImVec2 draw_start;
+
+void drawPixel(int16_t x, int16_t y,bool pixel) {
     // draw border
     static ImVec2 border_upper_left;
     static ImVec2 border_bottom_right;
+    static bool first_run = true;
+    draw_list = ImGui::GetWindowDrawList();
+    if (first_run) {
 
-    border_upper_left.x = draw_start.x - 1;
-    border_upper_left.y = draw_start.y - 1; 
-    border_bottom_right.x = draw_start.x + (pixel_size * SCREEN_WIDTH) + 1;
-    border_bottom_right.y = draw_start.y + (pixel_size * SCREEN_HEIGHT) + 1; 
 
-    draw_list->AddRect(border_upper_left, border_bottom_right, ImColor(0,0,250), 0.0f, ~0, 1.0f);
+        border_upper_left.x = draw_start.x - 1;
+        border_upper_left.y = draw_start.y - 1; 
+        border_bottom_right.x = draw_start.x + (pixel_size * SCREEN_WIDTH) + 1;
+        border_bottom_right.y = draw_start.y + (pixel_size * SCREEN_HEIGHT) + 1; 
 
-    for ( int32_t pxrow = 0; pxrow < SCREEN_HEIGHT; pxrow++ ) {
-        for ( int32_t pxcol = 0; pxcol < SCREEN_WIDTH; pxcol++ ) {
-            static ImColor px_color = ImColor(IM_COL32_WHITE);
-            static ImVec2 upper_left;
-            static ImVec2 bottom_right;
-            upper_left = ImVec2(draw_start.x + (pxcol * pixel_size),draw_start.y + (pxrow * pixel_size));
-            bottom_right = ImVec2(draw_start.x + ((pxcol+1) * pixel_size) ,draw_start.y + ((pxrow+1) * pixel_size)  );
-            //printf("       \n----------------\ndraw start x:%4f y:%4f \ncanvas size x:%4f y:%4f \ncanvas pos x:%3f y:%3f  \ndpxrow: %3d pxcol: %d\n", draw_start.x,draw_start.y,canvas_size.x,canvas_size.y,canvas_pos.x, canvas_pos.y,pxrow,pxcol);      
-            if(screenBuffer[pxrow][pxcol]) {
-                px_color = ImColor(IM_COL32_WHITE);
-                // printf("white pixel at x:%4f y:%4f to x:%4f y:%4f\n",upper_left.x,upper_left.y,bottom_right.x,bottom_right.y);
-            } else {
-                px_color = ImColor(IM_COL32_BLACK);
-                // printf("black pixel at x:%4f y:%4f to x:%4f y:%4f\n",upper_left.x,upper_left.y,bottom_right.x,bottom_right.y);
-            }
-            if(pixel_size == 1) {
-                draw_list->AddLine(upper_left,bottom_right, px_color, 1.0f);
-            } else {
-                draw_list->AddRectFilled(upper_left,bottom_right, px_color,0.0f, ~0);
-            }
-           
-        }
+        draw_list->AddRect(border_upper_left, border_bottom_right, ImColor(0,0,250), 0.0f, ~0, 1.0f);
+        first_run = false;
     }
-}
 
-void Screen::clear()
-{
-    for (int32_t pxrow = 0; pxrow < SCREEN_HEIGHT; pxrow++)
+
+
+    static ImColor px_white = ImColor(IM_COL32_WHITE);
+    static ImColor px_black = ImColor(IM_COL32_BLACK);
+    static ImColor px_color;
+
+    if (pixel) {
+        px_color = px_white;
+    } else {
+        px_color = px_black;
+    }
+
+    static ImVec2 upper_left;
+    static ImVec2 bottom_right;
+    upper_left = ImVec2(draw_start.x + (y * pixel_size),draw_start.y + (x * pixel_size));
+    bottom_right = ImVec2(draw_start.x + ((y+1) * pixel_size) ,draw_start.y + ((x+1) * pixel_size)  );
+
+    if (pixel_size == 1)
     {
-        for (int32_t pxcol = 0; pxcol < SCREEN_WIDTH; pxcol++)
-        {
-            screenBuffer[pxrow][pxcol] = 0;
-        }
+        draw_list->AddLine(upper_left, bottom_right, px_color, 1.0f);
+    }
+    else
+    {
+        draw_list->AddRectFilled(upper_left, bottom_right, px_color, 0.0f, ~0);
     }
 }
-
 
 void ShowAnimationDesignWindow(bool* p_open) {
     static bool first_run = true;
@@ -234,6 +230,9 @@ void ShowMenuPrototypeWindow(bool* p_open)
         for (int i = 0; i < points.Size - 1; i += 2)
             draw_list->AddLine(ImVec2(canvas_pos.x + points[i].x, canvas_pos.y + points[i].y), ImVec2(canvas_pos.x + points[i+1].x, canvas_pos.y + points[i+1].y), IM_COL32(255,255,0,255), 2.0f);
         draw_list->PopClipRect();
+
+        draw_start.x = canvas_pos.x + ( (canvas_size.x - (pixel_size * SCREEN_WIDTH)) / 2 );
+        draw_start.y = canvas_pos.y + ( (canvas_size.y - (pixel_size * SCREEN_HEIGHT)) / 2 );
         
         // ---------- BEGIN Screen Simulation Draw Routines ------------ //
 
@@ -274,7 +273,7 @@ void ShowMenuPrototypeWindow(bool* p_open)
         drawRec(mainScreen,margin, SCREEN_HEIGHT/2 + (rec_height/2) - 3,SCREEN_WIDTH - margin,SCREEN_HEIGHT/2 + (rec_height/2));
 
         //drawRec(170,scroller,scroller,250);
-        mainScreen->drawBuffer(pixel_size);
+        mainScreen->drawBuffer();
 
         // ---------- END Screen Simulation Draw Routines ------------ //
 
@@ -327,6 +326,9 @@ void ShowScrollTestWindow(bool * p_open) {
     draw_list->AddRectFilledMultiColor(canvas_pos, ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y), ImColor(0,0,0), ImColor(0,0,0), ImColor(0,0,0), ImColor(0,0,0));
     draw_list->AddRect(canvas_pos, ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y), ImColor(255,255,255));
 
+    draw_start.x = canvas_pos.x + ( (canvas_size.x - (pixel_size * SCREEN_WIDTH)) / 2 );
+    draw_start.y = canvas_pos.y + ( (canvas_size.y - (pixel_size * SCREEN_HEIGHT)) / 2 );
+
     // ----------------------------
     // Platform Independant Drawing
     // ----------------------------
@@ -341,7 +343,7 @@ void ShowScrollTestWindow(bool * p_open) {
             setFont(mainScreen,(uint8_t*)&homespun_font);
             DrawFrame *rec1 = new DrawFrame();
             DrawFrame *rec2 = new DrawFrame();
-            TextFrame *txt = new TextFrame();
+            TextFrame *txt = new TextFrame(Point(200,50),Point(20,20),"Frame");
             manager->addFrame((ViewFrame*)rec1);
             manager->addFrame((ViewFrame*)rec2);
             manager->addFrame((ViewFrame*)txt);
@@ -361,7 +363,7 @@ void ShowScrollTestWindow(bool * p_open) {
         drawRec(mainScreen, margin,SCREEN_HEIGHT/2 - (rec_height/2),SCREEN_WIDTH - margin,SCREEN_HEIGHT/2 - (rec_height/2)+3);
         drawRec(mainScreen,margin, SCREEN_HEIGHT/2 + (rec_height/2) - 3,SCREEN_WIDTH - margin,SCREEN_HEIGHT/2 + (rec_height/2));
 
-        mainScreen->drawBuffer(pixel_size);
+        mainScreen->drawBuffer();
 
     }
     // ----------------------------
