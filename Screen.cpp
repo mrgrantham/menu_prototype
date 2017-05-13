@@ -1,12 +1,22 @@
 #include "Screen.hpp"
 #include "jagdraw.hpp"
+#include <stdio.h>
 
 void Screen::drawPixel(int32_t x,int32_t y, uint8_t color) {
     if(x < SCREEN_WIDTH && x >= 0 && y < SCREEN_HEIGHT && y >= 0) {
 #ifndef BITBUFFER
         screenBuffer[y][x] = color;
 #else
+        static int16_t whichBit;
+        static int16_t whichByte;
+        static int16_t whichSubBit;
 
+        whichBit = (y * SCREEN_HEIGHT) + x;
+        whichByte = whichBit / 32; // whichBit << 5 might  be faster depending on compiler optimizations
+        whichSubBit = whichBit % 32;
+
+
+        screenBuffer[whichByte] = color ? (screenBuffer[whichByte] | (1<<whichSubBit)) :(screenBuffer[whichByte] & ~(1<<whichSubBit));
 #endif
     }
 }
@@ -20,17 +30,13 @@ void Screen::drawBuffer()
         for (pxcol = 0; pxcol < SCREEN_WIDTH; pxcol++)
         {
 #ifndef BITBUFFER
-
-            //printf("       \n----------------\ndraw start x:%4f y:%4f \ncanvas size x:%4f y:%4f \ncanvas pos x:%3f y:%3f  \ndpxrow: %3d pxcol: %d\n", draw_start.x,draw_start.y,canvas_size.x,canvas_size.y,canvas_pos.x, canvas_pos.y,pxrow,pxcol);
             if (screenBuffer[pxrow][pxcol])
             {
                 drawDev(pxrow, pxcol, true);
-                // printf("white pixel at x:%4f y:%4f to x:%4f y:%4f\n",upper_left.x,upper_left.y,bottom_right.x,bottom_right.y);
             }
             else
             {
                 drawDev(pxrow, pxcol, false);
-                // printf("black pixel at x:%4f y:%4f to x:%4f y:%4f\n",upper_left.x,upper_left.y,bottom_right.x,bottom_right.y);
             }
 #else
             static int16_t whichBit;
@@ -40,16 +46,14 @@ void Screen::drawBuffer()
             whichBit = (pxrow * SCREEN_HEIGHT) + pxcol;
             whichByte = whichBit / 32; // whichBit << 5 might  be faster depending on compiler optimizations
             whichSubBit = whichBit % 32;
-
+            printf("buffer: %d x: %3d y: %3d \n",sizeof(screenBuffer)),pxrow,pxcol;
             if ((screenBuffer[whichByte] >> whichSubBit) & 0x00000001)
             {
                 drawDev(pxrow, pxcol, true);
-                // printf("white pixel at x:%4f y:%4f to x:%4f y:%4f\n",upper_left.x,upper_left.y,bottom_right.x,bottom_right.y);
             }
             else
             {
                 drawDev(pxrow, pxcol, false);
-                // printf("black pixel at x:%4f y:%4f to x:%4f y:%4f\n",upper_left.x,upper_left.y,bottom_right.x,bottom_right.y);
             }
 
 #endif
