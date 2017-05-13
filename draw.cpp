@@ -7,15 +7,7 @@
 
 #include "draw.hpp"
 
-void drawPixel(Screen *screen, int32_t x,int32_t y, uint8_t color) {
-    if(x < SCREEN_WIDTH && x >= 0 && y < SCREEN_HEIGHT && y >= 0) {
-#ifndef BITBUFFER
-        screen->screenBuffer[y][x] = color;
-#else
 
-#endif
-    }
-}
 
 void drawLine(Screen *screen, int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
     static int32_t xdiff;
@@ -77,7 +69,7 @@ void drawLine(Screen *screen, int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
                 }
                 ycomp -= xdiff;
             }
-            drawPixel(screen, xinc,yinc);
+            screen->drawPixel( xinc,yinc);
         }
     } else { // Y is the longer traversal
         //xcomp = xdiff - ydiff; 
@@ -105,7 +97,7 @@ void drawLine(Screen *screen, int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
                 }                
                 xcomp -= ydiff;
             }
-            drawPixel(screen, xinc,yinc);
+            screen->drawPixel( xinc,yinc);
         }
 
     }
@@ -140,7 +132,7 @@ void drawChar(Screen *screen, char letter, uint16_t xpos, uint16_t ypos, uint16_
             pixel = (screen->current_font[(index * (font_width + 1)) + col] >> row) & 0x01;
             for (px = 0; px < size; px++) {
                 for (py = 0; py < size; py++ ) {
-                    drawPixel(screen, xpos + (col * size) + px,ypos + (row * size) + py,pixel);
+                    screen->drawPixel(xpos + (col * size) + px,ypos + (row * size) + py,pixel);
                 }
             }
         }

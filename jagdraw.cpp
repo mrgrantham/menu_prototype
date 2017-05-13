@@ -28,7 +28,7 @@ ImVec2 canvas_size;       // Resize canvas to what's available
 int pixel_size = 2;
 static ImVec2 draw_start;
 
-void drawPixel(int16_t x, int16_t y,bool pixel) {
+void drawDev(int16_t x, int16_t y,bool pixel) {
     // draw border
     static ImVec2 border_upper_left;
     static ImVec2 border_bottom_right;
@@ -256,12 +256,12 @@ void ShowMenuPrototypeWindow(bool* p_open)
         print(mainScreen,(char *)test,SCREEN_WIDTH/2 - (strlen(test)* font_size/2 * font_width),scroller,font_size);
 
     //    drawLine(40,40,50,50);
-    //     drawPixel(l1x1,l1y1);
-    //     drawPixel(l1x2,l1y2);
+    //     drawDev(l1x1,l1y1);
+    //     drawDev(l1x2,l1y2);
     //     drawLine(l1x1,l1y1,l1x2,l1y2);
 
-    //     drawPixel(l2x1,l2y1);
-    //     drawPixel(l2x2,l2y2);
+    //     drawDev(l2x1,l2y1);
+    //     drawDev(l2x2,l2y2);
     //     //drawLine(l2x1,l2y1,l2x2,l2y2);
 
     //     drawLine(l2x2,l2y2,l2x1,l2y1);

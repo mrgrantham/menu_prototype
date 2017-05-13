@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "imgui/imgui.h"
 
-#define BITBUFFER // this is to activate a space saving buffer that only used 1 bit per a 
+// #define BITBUFFER // this is to activate a space saving buffer that only used 1 bit per a 
 
 
 
@@ -21,7 +21,7 @@ class Screen {
     uint32_t screenBuffer[SCREEN_WIDTH * SCREEN_WIDTH / 32] = {0};
 #endif
     uint8_t * current_font = 0;
-    
+    void drawPixel( int32_t x,int32_t y, uint8_t color = 1);
     void drawBuffer();
     void clear();
 };

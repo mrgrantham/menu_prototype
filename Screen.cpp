@@ -1,6 +1,16 @@
 #include "Screen.hpp"
 #include "jagdraw.hpp"
 
+void Screen::drawPixel(int32_t x,int32_t y, uint8_t color) {
+    if(x < SCREEN_WIDTH && x >= 0 && y < SCREEN_HEIGHT && y >= 0) {
+#ifndef BITBUFFER
+        screenBuffer[y][x] = color;
+#else
+
+#endif
+    }
+}
+
 void Screen::drawBuffer()
 {
     static int32_t pxrow;
@@ -14,12 +24,12 @@ void Screen::drawBuffer()
             //printf("       \n----------------\ndraw start x:%4f y:%4f \ncanvas size x:%4f y:%4f \ncanvas pos x:%3f y:%3f  \ndpxrow: %3d pxcol: %d\n", draw_start.x,draw_start.y,canvas_size.x,canvas_size.y,canvas_pos.x, canvas_pos.y,pxrow,pxcol);
             if (screenBuffer[pxrow][pxcol])
             {
-                drawPixel(pxrow, pxcol, true);
+                drawDev(pxrow, pxcol, true);
                 // printf("white pixel at x:%4f y:%4f to x:%4f y:%4f\n",upper_left.x,upper_left.y,bottom_right.x,bottom_right.y);
             }
             else
             {
-                drawPixel(pxrow, pxcol, false);
+                drawDev(pxrow, pxcol, false);
                 // printf("black pixel at x:%4f y:%4f to x:%4f y:%4f\n",upper_left.x,upper_left.y,bottom_right.x,bottom_right.y);
             }
 #else
@@ -33,12 +43,12 @@ void Screen::drawBuffer()
 
             if ((screenBuffer[whichByte] >> whichSubBit) & 0x00000001)
             {
-                drawPixel(pxrow, pxcol, true);
+                drawDev(pxrow, pxcol, true);
                 // printf("white pixel at x:%4f y:%4f to x:%4f y:%4f\n",upper_left.x,upper_left.y,bottom_right.x,bottom_right.y);
             }
             else
             {
-                drawPixel(pxrow, pxcol, false);
+                drawDev(pxrow, pxcol, false);
                 // printf("black pixel at x:%4f y:%4f to x:%4f y:%4f\n",upper_left.x,upper_left.y,bottom_right.x,bottom_right.y);
             }
 
