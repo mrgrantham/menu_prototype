@@ -39,7 +39,7 @@
     }
 
     void FrameManager::drawFrames(void) {
-        static uint32_t frame_index;
+        static int32_t frame_index;
         for (frame_index = 0; frame_index < next_frame_id; frame_index++) {
             if (frames[frame_index]->active) {
                 frames[frame_index]->draw();

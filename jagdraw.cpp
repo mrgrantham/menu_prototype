@@ -29,25 +29,9 @@ int pixel_size = 2;
 static ImVec2 draw_start;
 
 void drawDev(int16_t x, int16_t y,bool pixel) {
-    // draw border
-    static ImVec2 border_upper_left;
-    static ImVec2 border_bottom_right;
-    static bool first_run = true;
+
     draw_list = ImGui::GetWindowDrawList();
-    if (first_run) {
-
-
-        border_upper_left.x = draw_start.x - 1;
-        border_upper_left.y = draw_start.y - 1; 
-        border_bottom_right.x = draw_start.x + (pixel_size * SCREEN_WIDTH) + 1;
-        border_bottom_right.y = draw_start.y + (pixel_size * SCREEN_HEIGHT) + 1; 
-
-        draw_list->AddRect(border_upper_left, border_bottom_right, ImColor(0,0,250), 0.0f, ~0, 1.0f);
-        first_run = false;
-    }
-
-
-
+    
     static ImColor px_white = ImColor(IM_COL32_WHITE);
     static ImColor px_black = ImColor(IM_COL32_BLACK);
     static ImColor px_color;
@@ -60,8 +44,8 @@ void drawDev(int16_t x, int16_t y,bool pixel) {
 
     static ImVec2 upper_left;
     static ImVec2 bottom_right;
-    upper_left = ImVec2(draw_start.x + (y * pixel_size),draw_start.y + (x * pixel_size));
-    bottom_right = ImVec2(draw_start.x + ((y+1) * pixel_size) ,draw_start.y + ((x+1) * pixel_size)  );
+    upper_left = ImVec2(draw_start.x + (x * pixel_size),draw_start.y + (y * pixel_size));
+    bottom_right = ImVec2(draw_start.x + ((x+1) * pixel_size) ,draw_start.y + ((y+1) * pixel_size)  );
 
     if (pixel_size == 1)
     {
@@ -76,6 +60,9 @@ void drawDev(int16_t x, int16_t y,bool pixel) {
 void ShowAnimationDesignWindow(bool* p_open) {
     static bool first_run = true;
     static anim_id params[5];
+
+
+
     if (first_run) {
         anim_obj = Animation::getInstance();
         params[0] = anim_obj->setAnimationState(50,0,100, &Animation::animation1);
@@ -127,27 +114,34 @@ void ShowAnimationDesignWindow(bool* p_open) {
 // Demonstrate using the low-level ImDrawList to draw custom shcurrent_apes. 
 void ShowMenuPrototypeWindow(bool* p_open)
 {
+    // draw border
+    static ImVec2 border_upper_left;
+    static ImVec2 border_bottom_right;
+
+
+
     static bool first_run = true;
     static anim_id test_animation;
     static anim_params_t *scroller_state;
     if (first_run) {
         anim_obj = Animation::getInstance();
         test_animation = anim_obj->setAnimationState(50,0,150, &Animation::animation2);
+
         first_run = false;
         scroller_state = anim_obj->getAnimationState(test_animation);
 
     }
     static int32_t scroller = 150;
-    static int32_t l1x1=0,l1y1=0,l1x2=0,l1y2=0,l2x1=0,l2y1=0,l2x2=0,l2y2=0;
-    l1x1 = 80;
-    l1y1 = scroller;
-    l1x2 = 32;
-    l1y2 = 47;
+    // static int32_t l1x1=0,l1y1=0,l1x2=0,l1y2=0,l2x1=0,l2y1=0,l2x2=0,l2y2=0;
+    // l1x1 = 80;
+    // l1y1 = scroller;
+    // l1x2 = 32;
+    // l1y2 = 47;
     
-    l2x1 = 100;
-    l2y1 = 200;
-    l2x2 = 105;
-    l2y2 = scroller;   
+    // l2x1 = 100;
+    // l2y1 = 200;
+    // l2x2 = 105;
+    // l2y2 = scroller;   
 
     ImGui::SetNextWindowPos(ImVec2(530,35), ImGuiSetCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(700,800), ImGuiSetCond_FirstUseEver);
@@ -234,6 +228,12 @@ void ShowMenuPrototypeWindow(bool* p_open)
         draw_start.x = canvas_pos.x + ( (canvas_size.x - (pixel_size * SCREEN_WIDTH)) / 2 );
         draw_start.y = canvas_pos.y + ( (canvas_size.y - (pixel_size * SCREEN_HEIGHT)) / 2 );
         
+        border_upper_left.x = draw_start.x - 1;
+        border_upper_left.y = draw_start.y - 1; 
+        border_bottom_right.x = draw_start.x + (pixel_size * SCREEN_WIDTH) + 1;
+        border_bottom_right.y = draw_start.y + (pixel_size * SCREEN_HEIGHT) + 1; 
+        draw_list->AddRect(border_upper_left, border_bottom_right, ImColor(0,0,250), 0.0f, ~0, 1.0f);
+
         // ---------- BEGIN Screen Simulation Draw Routines ------------ //
 
         static Screen *mainScreen = new Screen();
@@ -286,6 +286,10 @@ void ShowMenuPrototypeWindow(bool* p_open)
 
 void ShowScrollTestWindow(bool * p_open) {
 
+    // draw border
+    static ImVec2 border_upper_left;
+    static ImVec2 border_bottom_right;
+    
     // sets vertical positioning of items in  frame
     static int32_t scroller = 150;
 
@@ -315,7 +319,7 @@ void ShowScrollTestWindow(bool * p_open) {
         scroller = 150;
         anim_obj->resetAnimation(test_animation);
     }
-    ImGui::SameLine;
+    ImGui::SameLine();
     ImGui::SliderInt("POS SLIDER", &scroller, 0, 300);
 
     canvas_pos = ImGui::GetCursorScreenPos();            // ImDrawList current_API uses screen coordinates!
@@ -328,7 +332,11 @@ void ShowScrollTestWindow(bool * p_open) {
 
     draw_start.x = canvas_pos.x + ( (canvas_size.x - (pixel_size * SCREEN_WIDTH)) / 2 );
     draw_start.y = canvas_pos.y + ( (canvas_size.y - (pixel_size * SCREEN_HEIGHT)) / 2 );
-
+    border_upper_left.x = draw_start.x - 1;
+    border_upper_left.y = draw_start.y - 1; 
+    border_bottom_right.x = draw_start.x + (pixel_size * SCREEN_WIDTH) + 1;
+    border_bottom_right.y = draw_start.y + (pixel_size * SCREEN_HEIGHT) + 1; 
+    draw_list->AddRect(border_upper_left, border_bottom_right, ImColor(0,0,250), 0.0f, ~0, 1.0f);
     // ----------------------------
     // Platform Independant Drawing
     // ----------------------------

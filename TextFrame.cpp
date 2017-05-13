@@ -38,12 +38,14 @@ void TextFrame::draw() {
 }
 
 Point& TextFrame::getSize() {
-
+    Point *aPoint = new Point();
+    return *aPoint;
 }
 
 Point& TextFrame::getPosition() {
-
-}
+    Point *aPoint = new Point();
+    return *aPoint;
+    }
 
 TextFrame::~TextFrame() {
 
