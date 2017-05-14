@@ -132,7 +132,9 @@ void drawChar(Screen *screen, char letter, uint16_t xpos, uint16_t ypos, uint16_
             pixel = (screen->current_font[(index * (font_width + 1)) + col] >> row) & 0x01;
             for (px = 0; px < size; px++) {
                 for (py = 0; py < size; py++ ) {
-                    screen->drawPixel(xpos + (col * size) + px,ypos + (row * size) + py,pixel);
+                    if (pixel) {
+                        screen->drawPixel(xpos + (col * size) + px,ypos + (row * size) + py);
+                    }
                 }
             }
         }

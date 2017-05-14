@@ -9,19 +9,17 @@
 
 class TextFrame : public ViewFrame {
     char text[32];
+    uint8_t textSize;
 public:
     TextFrame();
+    TextFrame(Screen &screen);
+    TextFrame(Screen &screen, Point pos, Point sz);
     TextFrame(Point _size, Point _position);
-    TextFrame(Point _size, Point _position,const char *_text);
-    void setSize(Point &_size);
-    void setPosition(Point &_position);
-    void setPosition(int32_t x, int32_t y);
-    void setX(int32_t x);
-    void setY(int32_t y);
+    TextFrame(Screen &screen, Point pos, Point sz, const char *_text);
+    TextFrame(Point _size, Point _position,const char *_text, uint8_t txSize = 1);
+
     void setText(const char *_text);
     void draw();
-    Point& getSize();
-    Point& getPosition();
     ~TextFrame();
 };
 

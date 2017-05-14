@@ -244,12 +244,12 @@ void ShowMenuPrototypeWindow(bool* p_open)
         const char * test = "--TESTING--";
         static int16_t font_width = 6;
         if(!scroller_state->complete) {
-            printf("EIO: prog: %3d dur: %3d st: %3d end: %3d output: %3d",  scroller_state->progress,
-                                                                            scroller_state->duration,
-                                                                            scroller_state->start_val,
-                                                                            scroller_state->end_val,
-                                                                            scroller_state->output);
-            printf(" scroller: %3d\n",scroller);
+            // printf("EIO: prog: %3d dur: %3d st: %3d end: %3d output: %3d",  scroller_state->progress,
+            //                                                                 scroller_state->duration,
+            //                                                                 scroller_state->start_val,
+            //                                                                 scroller_state->end_val,
+            //                                                                 scroller_state->output);
+            // printf(" scroller: %3d\n",scroller);
             anim_obj->animate(test_animation);
             scroller = scroller_state->output;
         }
@@ -345,33 +345,50 @@ void ShowScrollTestWindow(bool * p_open) {
         static Screen *mainScreen;
         static bool first_time = true;
 
+        TextFrame *testFrame;
+        static const char * test = "--TESTING--";
+        static int16_t font_width = 6;
+        static Point testFramePos;
+        testFramePos.x = SCREEN_WIDTH/2 - (strlen(test)* font_size/2 * font_width);
+        testFramePos.y = scroller;
+
         if (first_time) {
             mainScreen = new Screen();
             manager = new FrameManager(mainScreen);
             setFont(mainScreen,(uint8_t*)&homespun_font);
             DrawFrame *rec1 = new DrawFrame();
             DrawFrame *rec2 = new DrawFrame();
-            TextFrame *txt = new TextFrame(Point(200,50),Point(20,20),"Frame");
+            testFrame = new TextFrame(Point(200,50),Point(20,20),test,3);
+            TextFrame *txt = new TextFrame(Point(200,50),Point(20,20),"FRAME: 100",1);
+            TextFrame *txt2 = new TextFrame(Point(200,50),Point(20,50),"FRAME: 200",2);
+            TextFrame *txt3 = new TextFrame(Point(200,50),Point(20,80),"FRAME: 300",3);
+
+            manager->addFrame((ViewFrame*)testFrame);
             manager->addFrame((ViewFrame*)rec1);
             manager->addFrame((ViewFrame*)rec2);
             manager->addFrame((ViewFrame*)txt);
+            manager->addFrame((ViewFrame*)txt2);
+            manager->addFrame((ViewFrame*)txt3);
 
             first_time = false;
         }
 
         mainScreen->clear();
 
-        static const char * test = "--TESTING--";
-        static int16_t font_width = 6;
 
-        print(mainScreen,(char *)test,SCREEN_WIDTH/2 - (strlen(test)* font_size/2 * font_width),scroller,font_size);
+        testFrame->setPosition(testFramePos);
+        // Point currentPOS;
+        // currentPOS = testFrame->getPosition();
+        // printf("testFrame position: %d %d\n", currentPOS.x, currentPOS.y);
+        // print(mainScreen,(char *)test,SCREEN_WIDTH/2 - (strlen(test)* font_size/2 * font_width),scroller,font_size);
 
         static int32_t margin = 15;
         static int32_t rec_height = 50;
         drawRec(mainScreen, margin,SCREEN_HEIGHT/2 - (rec_height/2),SCREEN_WIDTH - margin,SCREEN_HEIGHT/2 - (rec_height/2)+3);
         drawRec(mainScreen,margin, SCREEN_HEIGHT/2 + (rec_height/2) - 3,SCREEN_WIDTH - margin,SCREEN_HEIGHT/2 + (rec_height/2));
 
-        mainScreen->drawBuffer();
+        manager->drawFrames();
+        // mainScreen->drawBuffer();
 
     }
     // ----------------------------

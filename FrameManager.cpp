@@ -1,7 +1,7 @@
 
 #include "FrameManager.hpp"
 #include <stdio.h>
-
+#include "Screen.hpp"
 
     FrameManager::FrameManager(Screen *screen) {
         next_frame_id = 0;
@@ -10,6 +10,7 @@
     
     frame_id FrameManager::addFrame(ViewFrame *frame) {
         frame_id id = next_frame_id;
+        frame->setScreen(_screen);
         frames[id] = frame;
         next_frame_id++;
         return id;
@@ -45,5 +46,6 @@
                 frames[frame_index]->draw();
             }
         }
+        _screen->drawBuffer();
 
     }

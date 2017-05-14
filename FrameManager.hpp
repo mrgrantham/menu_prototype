@@ -14,7 +14,7 @@ typedef struct {
 } frame_t;
 
 class FrameManager {
-    ViewFrame *frames[32]; 
+    ViewFrame *frames[32] = {0}; 
     frame_id next_frame_id;
     Screen *_screen;
 public:

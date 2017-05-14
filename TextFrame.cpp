@@ -1,8 +1,18 @@
 
 #include "TextFrame.hpp"
 #include "string.h"
+#include "draw.hpp"
+#include "Screen.hpp"
 
 TextFrame::TextFrame() : ViewFrame() {
+
+}
+
+TextFrame::TextFrame(Screen &screen) : ViewFrame(screen) {
+
+}
+
+TextFrame::TextFrame(Screen &screen, Point pos, Point sz) : ViewFrame(screen, pos, sz) {
 
 }
 
@@ -10,16 +20,13 @@ TextFrame::TextFrame(Point _size, Point _position) : ViewFrame(_size,_position) 
     setText("?");
 }
 
-TextFrame::TextFrame(Point _size, Point _position,const char *_text) : ViewFrame(_size,_position) {
+TextFrame::TextFrame(Screen &screen, Point pos, Point sz, const char *_text) : ViewFrame(screen, pos, sz) {
     setText(_text);
 }
 
-void TextFrame::setSize(Point &_size) {
-
-}
-
-void TextFrame::setPosition(Point &_position) {
-
+TextFrame::TextFrame(Point _size, Point _position,const char *_text,uint8_t txSize) : ViewFrame(_size,_position) {
+    setText(_text);
+    textSize = txSize;
 }
 
 void TextFrame::setText(const char *_text) {
@@ -34,18 +41,8 @@ void TextFrame::setText(const char *_text) {
 }
 
 void TextFrame::draw() {
-    
+    print(_screen,text, position.x,position.y,textSize);
 }
-
-Point& TextFrame::getSize() {
-    Point *aPoint = new Point();
-    return *aPoint;
-}
-
-Point& TextFrame::getPosition() {
-    Point *aPoint = new Point();
-    return *aPoint;
-    }
 
 TextFrame::~TextFrame() {
 
