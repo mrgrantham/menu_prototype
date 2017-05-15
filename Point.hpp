@@ -15,7 +15,7 @@ typedef enum {
 typedef struct Point {
     int32_t x;
     int32_t y;
-    Point() : x(0), y(0) {};
+    Point() : x(0), y(0) {};    
     Point(int32_t x, int32_t y) : x(x), y(y) {};
     Point(int32_t value) : x(value), y(value) {};
     // Point &operator=(Point &p) {this->x = p.x; this->y = p.y; return *this;}

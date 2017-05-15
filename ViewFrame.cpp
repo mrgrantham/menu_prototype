@@ -20,6 +20,7 @@ ViewFrame::ViewFrame(Screen &screen) {
 ViewFrame::ViewFrame(Point _size, Point _position) : position(), size(), corners(),maskSize(),maskPosition() {
     size = _size;
     position = _position;
+    setMask(maskPosition,Point(SCREEN_WIDTH,SCREEN_HEIGHT));
 }
 
 ViewFrame::ViewFrame(Screen &screen, Point _size, Point _position) {
