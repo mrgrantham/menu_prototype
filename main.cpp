@@ -77,7 +77,7 @@ int main(int, char**)
         bool rendering_window=false;
         bool animation_window=false;
         bool scroll_window=false;
-        ShowMenuPrototypeWindow(&rendering_window);
+        // ShowMenuPrototypeWindow(&rendering_window);
         ShowAnimationDesignWindow(&animation_window);
         ShowScrollTestWindow(&scroll_window);
 

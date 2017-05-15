@@ -17,7 +17,7 @@ ViewFrame::ViewFrame(Screen &screen) {
 
 }
 
-ViewFrame::ViewFrame(Point _size, Point _position) {
+ViewFrame::ViewFrame(Point _size, Point _position) : position(), size(), corners(),mask() {
     size = _size;
     position = _position;
 }

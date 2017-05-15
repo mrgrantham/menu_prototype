@@ -19,7 +19,7 @@ class ViewFrame {
     frame_id id;
     Point size;     
     Point position; // absolute coordinates
-    Point corners[4];
+    Point corners[4] = {0};
     Point mask[4];
 
     anim_id anim;
