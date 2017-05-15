@@ -4,42 +4,45 @@
 
 ViewFrame::ViewFrame() {
     Point p;
-    position = p;
+    _position = p;
 }
 
 ViewFrame::ViewFrame(Screen &screen) {
     Point p;
     Point s;
 
-    position = p;
-    size = s;
+    _position = p;
+    _size = s;
+    setCorners();
     _screen = &screen;
 
 }
 
-ViewFrame::ViewFrame(Point _size, Point _position) : position(), size(), corners(),maskSize(),maskPosition() {
-    size = _size;
-    position = _position;
-    setMask(maskPosition,Point(SCREEN_WIDTH,SCREEN_HEIGHT));
+ViewFrame::ViewFrame(Point size, Point position) : _position(), _size(), corners(),_maskSize(),_maskPosition() {
+    _size = size;
+    _position = position;
+    setCorners();
+    setMask(_maskPosition,Point(SCREEN_WIDTH,SCREEN_HEIGHT));
 }
 
-ViewFrame::ViewFrame(Screen &screen, Point _size, Point _position) {
-    size = _size;
-    position = _position;
+ViewFrame::ViewFrame(Screen &screen, Point size, Point position) {
+    _size = size;
+    _position = position;
+    setCorners();
     _screen = &screen;
 }
 
 
 void ViewFrame::setCorners() {
-    corners[UpperLeft] = position;
+    corners[UpperLeft] = _position;
     
-    Point LL(position.x + size.x, position.y);
+    Point LL(_position.x + _size.x, _position.y);
     corners[LowerLeft] = LL;
 
-    Point UR(position.x, position.y + size.y);
+    Point UR(_position.x, _position.y + _size.y);
     corners[UpperRight] = UR;
 
-    Point LR(position.x + size.x, position.y + size.y);
+    Point LR(_position.x + _size.x, _position.y + _size.y);
     corners[LowerRight] = LR;
 
 }
@@ -56,33 +59,38 @@ void ViewFrame::setMask(Point pos, Point sz) {
     Point LR(pos.x + sz.x, pos.y + sz.y);
     maskCorners[LowerRight] = LR;
 
-    maskPosition = pos;
-    maskSize = sz;
+    _maskPosition = pos;
+    _maskSize = sz;
 }
 
 Point& ViewFrame::getMaskPosition() {
-    return maskPosition;
+    return _maskPosition;
 }
 
 Point& ViewFrame::getMaskSize() {
-    return maskSize;
+    return _maskSize;
 }
 
 Point * ViewFrame::getMaskCorners() {
     return maskCorners;
 }
+    
+Point * ViewFrame::getCorners() {
+    return corners;
+}
+
 
 void ViewFrame::setPosition(Point p) {
-    position = p;
+    _position = p;
     setCorners();
 }
 
 Point &ViewFrame::getPosition() {
-    return position;
+    return _position;
 }
 
 void ViewFrame::setSize(Point s) {
-    position = s;
+    _size = s;
     setCorners();
 }
 

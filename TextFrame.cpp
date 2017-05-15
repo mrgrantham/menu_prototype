@@ -41,7 +41,7 @@ void TextFrame::setText(const char *_text) {
 }
 
 void TextFrame::draw() {
-    print(_screen,text, position.x,position.y,textSize);
+    print(_screen,text, _position.x,_position.y,textSize);
 }
 
 TextFrame::~TextFrame() {

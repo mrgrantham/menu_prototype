@@ -5,6 +5,8 @@
 #include <iostream>
 #include <stdint.h>
 
+#define AM Animation::getInstance()
+
 using namespace std;
 
 typedef struct anim_params{
@@ -33,7 +35,7 @@ class Animation {
         cout << "animated" << endl;
         next_animation_id = 0;
     }
-    anim_params_t animations[16]; // holds the state for all existing animations
+    anim_params_t animations[32]; // holds the state for all existing animations
     anim_id next_animation_id;
 
     public:

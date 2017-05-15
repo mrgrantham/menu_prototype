@@ -27,15 +27,15 @@ void DrawFrame::draw() {
         static func_data *d_dat;
         d_dat = &drawCommands[i];
         if          (d_dat->d_shape == d_line) {
-            drawLine(_screen,   d_dat->dparams[0] + position.x,
-                                d_dat->dparams[1] + position.y,
-                                d_dat->dparams[2] + position.x,
-                                d_dat->dparams[3] + position.y);
+            drawLine(_screen,   d_dat->dparams[0] + _position.x,
+                                d_dat->dparams[1] + _position.y,
+                                d_dat->dparams[2] + _position.x,
+                                d_dat->dparams[3] + _position.y);
         } else if   (d_dat->d_shape == d_rect) {
-            drawRec(_screen,   d_dat->dparams[0] + position.x,
-                                d_dat->dparams[1] + position.y,
-                                d_dat->dparams[2] + position.x,
-                                d_dat->dparams[3] + position.y);
+            drawRec(_screen,   d_dat->dparams[0] + _position.x,
+                                d_dat->dparams[1] + _position.y,
+                                d_dat->dparams[2] + _position.x,
+                                d_dat->dparams[3] + _position.y);
         } else {
             printf("invalid shape\n");
         }

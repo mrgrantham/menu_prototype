@@ -11,11 +11,11 @@
 class ViewFrame {
     protected:
     frame_id id;
-    Point size;     
-    Point position; // absolute coordinates
+    Point _size;     
+    Point _position; // absolute coordinates
     Point corners[4] = {0};
-    Point maskPosition;
-    Point maskSize;
+    Point _maskPosition;
+    Point _maskSize;
     Point maskCorners[4] = {0};
 
     anim_id anim;
@@ -26,12 +26,13 @@ class ViewFrame {
     bool active = true;
     ViewFrame();
     ViewFrame(Screen &screen);
-    ViewFrame(Point _size, Point _position);
-    ViewFrame(Screen &screen, Point _size, Point _position);
+    ViewFrame(Point size, Point position);
+    ViewFrame(Screen &screen, Point size, Point position);
     void setMask(Point pos, Point size);
     Point &getMaskPosition();
     Point &getMaskSize();
     Point *getMaskCorners();
+    Point *getCorners();
     void setSize(Point &_size);
     void setX(int32_t x);
     void setY(int32_t y);

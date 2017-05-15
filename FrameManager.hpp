@@ -18,6 +18,7 @@ class FrameManager {
     ViewFrame *frames[32] = {0}; 
     frame_id next_frame_id;
     Screen *_screen;
+    Animation *_aniManager;
 public:
     FrameManager(Screen *screen);
     frame_id addFrame(ViewFrame *frame);

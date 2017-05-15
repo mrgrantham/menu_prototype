@@ -51,5 +51,5 @@
             }
         }
         _screen->drawBuffer();
-
+        AM->animate();
     }

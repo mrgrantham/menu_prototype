@@ -11,6 +11,7 @@
 #include "FrameManager.hpp"
 #include "TextFrame.hpp"
 #include "DrawFrame.hpp"
+#include "NumberFrame.hpp"
 #include "Screen.hpp"
 
 #define IM_ARRAYSIZE(_ARR)  ((int)(sizeof(_ARR)/sizeof(*_ARR)))
@@ -351,6 +352,9 @@ void ShowScrollTestWindow(bool * p_open) {
         static int32_t *border1params;
         static int32_t *border2params;
 
+        static NumberFrame *numFrame;
+
+
         static const char * bname = "<eBoard>";
 
 
@@ -392,13 +396,14 @@ void ShowScrollTestWindow(bool * p_open) {
             rec1->addDrawing(d_rect,border1params);
             rec1->addDrawing(d_rect,border2params);
 
+            numFrame = new NumberFrame(Point(50,50),Point(SCREEN_WIDTH/2 + 70,150),6);
 
             battery = new DrawFrame(Point(40,20),Point(200,10));
 
             tip = (int32_t*)malloc(4 * sizeof(int32_t));
-            tip[0] = 0;
+            tip[0] = 1;
             tip[1] = 17;
-            tip[2] = 2;
+            tip[2] = 3;
             tip[3] = 22;
 
             bl1 = (int32_t*)malloc(4 * sizeof(int32_t));
