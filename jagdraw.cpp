@@ -359,6 +359,7 @@ void ShowScrollTestWindow(bool * p_open) {
             DrawFrame *rec2 = new DrawFrame();
             testFramePos = new Point();
             testFrame = new TextFrame(Point(200,50),*testFramePos,test,3);
+            testFrame->setMask(Point(0,135),Point(240,50));
             TextFrame *txt = new TextFrame(Point(200,50),Point(20,20),"FRAME: 100",1);
             TextFrame *txt2 = new TextFrame(Point(200,50),Point(20,50),"FRAME: 200",2);
             TextFrame *txt3 = new TextFrame(Point(200,50),Point(20,80),"FRAME: 300",3);

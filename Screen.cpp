@@ -4,20 +4,22 @@
 
 void Screen::drawPixel(int32_t x,int32_t y, uint8_t color) {
     if(x < SCREEN_WIDTH && x >= 0 && y < SCREEN_HEIGHT && y >= 0) {
-#ifndef BITBUFFER
-        screenBuffer[y][x] = color;
-#else
-        static int32_t whichBit;
-        static int32_t whichByte;
-        static int32_t whichSubBit;
+        if (maskCorners == NULL || (x >= maskCorners[UpperLeft].x && y >= maskCorners[UpperLeft].y && x <= maskCorners[LowerRight].x && y <= maskCorners[LowerRight].y  )) {
+        #ifndef BITBUFFER
+            screenBuffer[y][x] = color;
+        #else
+            static int32_t whichBit;
+            static int32_t whichByte;
+            static int32_t whichSubBit;
 
-        whichBit = (y * SCREEN_WIDTH) + x;
-        whichByte = whichBit / 32; // whichBit << 5 might  be faster depending on compiler optimizations
-        whichSubBit = whichBit % 32;
+            whichBit = (y * SCREEN_WIDTH) + x;
+            whichByte = whichBit / 32; // whichBit << 5 might  be faster depending on compiler optimizations
+            whichSubBit = whichBit % 32;
 
 
-        screenBuffer[whichByte] = color ? (screenBuffer[whichByte] | (1<<whichSubBit)) :(screenBuffer[whichByte] & ~(1<<whichSubBit));
-#endif
+            screenBuffer[whichByte] = color ? (screenBuffer[whichByte] | (1<<whichSubBit)) :(screenBuffer[whichByte] & ~(1<<whichSubBit));
+        #endif
+        }
     }
 }
 
@@ -61,6 +63,15 @@ void Screen::drawBuffer()
 #endif
         }
     }
+}
+
+void Screen::setMask(Point *pos,Point *size) {
+    maskPosition = pos;
+    maskSize = size;
+}
+
+void Screen::setMask(Point *maskArray) { 
+    maskCorners = maskArray;
 }
 
 void Screen::clear()

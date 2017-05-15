@@ -13,16 +13,9 @@
 #include "fonts.h"
 #include "stdint.h"
 #include "Screen.hpp"
+#include "Point.hpp"
 
 
-typedef struct Point {
-    uint32_t x;
-    uint32_t y;
-    Point() : x(0), y(0) {};
-    Point(uint32_t x, uint32_t y) : x(x), y(y) {};
-    Point(uint32_t value) : x(value), y(value) {};
-    // Point &operator=(Point &p) {this->x = p.x; this->y = p.y; return *this;}
-} Point;
 
 // extern uint8_t screenBuffer[SCREEN_HEIGHT][SCREEN_WIDTH]; 
 // extern uint8_t * current_font;

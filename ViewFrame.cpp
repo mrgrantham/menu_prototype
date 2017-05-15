@@ -17,7 +17,7 @@ ViewFrame::ViewFrame(Screen &screen) {
 
 }
 
-ViewFrame::ViewFrame(Point _size, Point _position) : position(), size(), corners(),mask() {
+ViewFrame::ViewFrame(Point _size, Point _position) : position(), size(), corners(),maskSize(),maskPosition() {
     size = _size;
     position = _position;
 }
@@ -44,16 +44,31 @@ void ViewFrame::setCorners() {
 }
 
 void ViewFrame::setMask(Point pos, Point sz) {
-    mask[UpperLeft] = pos;
+    maskCorners[UpperLeft] = pos;
 
     Point LL(pos.x + sz.x, pos.y);
-    mask[LowerLeft] = LL;
+    maskCorners[LowerLeft] = LL;
 
     Point UR(pos.x, pos.y + sz.y);
-    mask[UpperRight] = UR;
+    maskCorners[UpperRight] = UR;
 
     Point LR(pos.x + sz.x, pos.y + sz.y);
-    mask[LowerRight] = LR;
+    maskCorners[LowerRight] = LR;
+
+    maskPosition = pos;
+    maskSize = sz;
+}
+
+Point& ViewFrame::getMaskPosition() {
+    return maskPosition;
+}
+
+Point& ViewFrame::getMaskSize() {
+    return maskSize;
+}
+
+Point * ViewFrame::getMaskCorners() {
+    return maskCorners;
 }
 
 void ViewFrame::setPosition(Point p) {

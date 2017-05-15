@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include "imgui/imgui.h"
 
+#include "Point.hpp"
+
 #define BITBUFFER // this is to activate a space saving buffer that only used 1 bit per a 
 
 
@@ -12,6 +14,10 @@
 #define SCREEN_HEIGHT 320
 
 class Screen {
+
+    Point *maskPosition;
+    Point *maskSize;
+    Point *maskCorners;
 
     public:
 
@@ -23,6 +29,8 @@ class Screen {
     uint8_t * current_font = 0;
     void drawPixel( int32_t x,int32_t y, uint8_t color = 1);
     void drawBuffer();
+    void setMask(Point *pos,Point *size);
+    void setMask(Point *maskArray);
     void clear();
 };
 

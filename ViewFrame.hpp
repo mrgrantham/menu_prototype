@@ -2,17 +2,11 @@
 #ifndef VIEW_FRAME_HPP
 #define VIEW_FRAME_HPP
 
+#include "Point.hpp"
 #include "draw.hpp"
 #include "animate.hpp"
 
-typedef int32_t frame_id;
 
-typedef enum {
-    UpperLeft,
-    LowerLeft,
-    UpperRight,
-    LowerRight
-} Corners;
 
 class ViewFrame {
     protected:
@@ -20,7 +14,9 @@ class ViewFrame {
     Point size;     
     Point position; // absolute coordinates
     Point corners[4] = {0};
-    Point mask[4];
+    Point maskPosition;
+    Point maskSize;
+    Point maskCorners[4] = {0};
 
     anim_id anim;
     Screen *_screen;
@@ -33,6 +29,9 @@ class ViewFrame {
     ViewFrame(Point _size, Point _position);
     ViewFrame(Screen &screen, Point _size, Point _position);
     void setMask(Point pos, Point size);
+    Point &getMaskPosition();
+    Point &getMaskSize();
+    Point *getMaskCorners();
     void setSize(Point &_size);
     void setX(int32_t x);
     void setY(int32_t y);
