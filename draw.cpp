@@ -7,7 +7,12 @@
 
 #include "draw.hpp"
 
-
+void setDraw() {
+    pixel = true;
+}
+void setErase() {
+    pixel = false;
+}
 
 void drawLine(Screen *screen, int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
     static int32_t xdiff;
@@ -69,7 +74,8 @@ void drawLine(Screen *screen, int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
                 }
                 ycomp -= xdiff;
             }
-            screen->drawPixel( xinc,yinc);
+            // screen->drawPixel( xinc,yinc);
+            drawDev(xinc,yinc,pixel);
         }
     } else { // Y is the longer traversal
         //xcomp = xdiff - ydiff; 
@@ -97,7 +103,8 @@ void drawLine(Screen *screen, int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
                 }                
                 xcomp -= ydiff;
             }
-            screen->drawPixel( xinc,yinc);
+            // screen->drawPixel( xinc,yinc);
+            drawDev(xinc,yinc,pixel);
         }
 
     }
@@ -133,7 +140,8 @@ void drawChar(Screen *screen, char letter, uint16_t xpos, uint16_t ypos, uint16_
             for (px = 0; px < size; px++) {
                 for (py = 0; py < size; py++ ) {
                     if (pixel) {
-                        screen->drawPixel(xpos + (col * size) + px,ypos + (row * size) + py);
+                        // screen->drawPixel(xpos + (col * size) + px,ypos + (row * size) + py);
+                        drawDev(xpos + (col * size) + px,ypos + (row * size) + py,pixel);
                     }
                 }
             }

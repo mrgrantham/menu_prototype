@@ -18,6 +18,17 @@ void NumberFrame::setVal(int32_t val) {
 }
 
 void NumberFrame::draw() {
+    setDraw();
+    static int32_t i;
+    for (i = 0 ; i < MAX_SUBFRAMES; i++) {
+        if (txframes[i]->active) {
+            txframes[i]->draw();
+        }
+    }
+}
+
+void NumberFrame::erase() {
+    setErase();
     static int32_t i;
     for (i = 0 ; i < MAX_SUBFRAMES; i++) {
         if (txframes[i]->active) {

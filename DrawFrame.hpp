@@ -31,6 +31,7 @@ class DrawFrame : public ViewFrame {
     DrawFrame();
     DrawFrame(Point sz, Point pos);
     void draw();
+    void erase();
 
 };
 

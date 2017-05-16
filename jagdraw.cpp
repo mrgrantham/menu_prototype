@@ -13,6 +13,7 @@
 #include "DrawFrame.hpp"
 #include "NumberFrame.hpp"
 #include "Screen.hpp"
+#include "pixel.h"
 
 #define IM_ARRAYSIZE(_ARR)  ((int)(sizeof(_ARR)/sizeof(*_ARR)))
 
@@ -29,40 +30,11 @@ ImVec2 canvas_size;       // Resize canvas to what's available
 int pixel_size = 2;
 static ImVec2 draw_start;
 
-void drawDev(int16_t x, int16_t y,bool pixel) {
-
-    draw_list = ImGui::GetWindowDrawList();
-    
-    static ImColor px_white = ImColor(IM_COL32_WHITE);
-    static ImColor px_black = ImColor(IM_COL32_BLACK);
-    static ImColor px_color;
-
-    if (pixel) {
-        px_color = px_white;
-    } else {
-        px_color = px_black;
-    }
-
-    static ImVec2 upper_left;
-    static ImVec2 bottom_right;
-    upper_left = ImVec2(draw_start.x + (x * pixel_size),draw_start.y + (y * pixel_size));
-    bottom_right = ImVec2(draw_start.x + ((x+1) * pixel_size) ,draw_start.y + ((y+1) * pixel_size)  );
-
-    if (pixel_size == 1)
-    {
-        draw_list->AddLine(upper_left, bottom_right, px_color, 1.0f);
-    }
-    else
-    {
-        draw_list->AddRectFilled(upper_left, bottom_right, px_color, 0.0f, ~0);
-    }
-}
-
 void ShowAnimationDesignWindow(bool* p_open) {
     static bool first_run = true;
     static anim_id params[5];
 
-
+    setStart(&draw_start);
 
     if (first_run) {
         anim_obj = Animation::getInstance();
@@ -287,6 +259,8 @@ void ShowMenuPrototypeWindow(bool* p_open)
 
 void ShowScrollTestWindow(bool * p_open) {
 
+    setStart(&draw_start);
+    setPx(&pixel_size);
     // draw border
     static ImVec2 border_upper_left;
     static ImVec2 border_bottom_right;

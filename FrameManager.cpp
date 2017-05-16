@@ -50,6 +50,6 @@
                 frames[frame_index]->draw();
             }
         }
-        _screen->drawBuffer();
+        // _screen->drawBuffer();
         AM->animate();
     }

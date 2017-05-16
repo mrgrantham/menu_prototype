@@ -10,6 +10,7 @@
 
 #include <stdint.h>
 #include "imgui/imgui.h"
+#include "pixel.h"
 #include "fonts.h"
 #include "stdint.h"
 #include "Screen.hpp"
@@ -20,6 +21,10 @@
 // extern uint8_t screenBuffer[SCREEN_HEIGHT][SCREEN_WIDTH]; 
 // extern uint8_t * current_font;
 
+static bool pixel=true;
+
+void setDraw();
+void setErase();
 void drawLine( Screen *screen, int32_t x1, int32_t y1, int32_t x2, int32_t y2);
 void drawRec( Screen *screen, int32_t x1, int32_t y1, int32_t x2, int32_t y2);
 void drawChar( Screen *screen, char letter, uint16_t xpos, uint16_t ypos, uint16_t size = 1);
