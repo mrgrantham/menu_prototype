@@ -21,7 +21,6 @@
 // extern uint8_t screenBuffer[SCREEN_HEIGHT][SCREEN_WIDTH]; 
 // extern uint8_t * current_font;
 
-static bool pixel=true;
 
 void setDraw();
 void setErase();

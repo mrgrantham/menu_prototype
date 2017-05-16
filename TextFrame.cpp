@@ -41,11 +41,9 @@ void TextFrame::setText(const char *_text) {
 }
 
 void TextFrame::draw() {
-    if (changed) {
-        setDraw();
-        print(_screen,text, _position.x,_position.y,textSize);
-        changed = false;
-    }
+    setDraw();
+    print(_screen,text, _position.x,_position.y,textSize);
+    changed = false;
 
 }
 

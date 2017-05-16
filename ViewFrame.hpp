@@ -14,8 +14,8 @@ class ViewFrame {
     Point _size;     
     Point _position; // absolute coordinates
     Point corners[4] = {0};
-    Point _maskPosition;
     Point _maskSize;
+    Point _maskPosition;
     Point maskCorners[4] = {0};
 
     anim_id anim;

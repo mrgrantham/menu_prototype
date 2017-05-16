@@ -8,6 +8,7 @@
 #include "ScrollFrame.hpp"
 #include "Screen.hpp"
 #include "Point.hpp"
+#include "pixel.h"
 
 typedef struct {
     enum {View_Frame, Text_Frame, Draw_Frame, Scoll_Frame} type;

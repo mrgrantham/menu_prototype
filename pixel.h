@@ -4,12 +4,13 @@
 
 #define SIMULATION
 
+#include <stdint.h>
+#include "Point.hpp"
 #ifdef SIMULATION
 
 #include "imgui/imgui.h"
 
-static ImVec2 *ds;
-static int * px;
+void setPixelMaskCorners(Point *mc);
 void setStart(ImVec2 *draw_start);
 void setPx(int *pixelSize) ;
 void drawDev(int16_t x, int16_t y,bool pixel) ;

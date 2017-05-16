@@ -63,9 +63,10 @@ void NumberFrame::setMask(Point pos, Point size) {
 bool NumberFrame::outOfView(TextFrame *frame) {
     static Point *fcorners;
     fcorners = frame->getCorners();
-    if (fcorners == NULL || (fcorners[LowerRight].x < corners[UpperLeft].x || fcorners[LowerRight].y < corners[UpperLeft].y || fcorners[UpperLeft].x <= corners[LowerRight].x && fcorners[UpperLeft].y <= corners[LowerRight].y  )) {
+    if (fcorners == NULL || (fcorners[LowerRight].x < corners[UpperLeft].x || fcorners[LowerRight].y < corners[UpperLeft].y || fcorners[UpperLeft].x <= corners[LowerRight].x || fcorners[UpperLeft].y <= corners[LowerRight].y  )) {
         return true;
     }
+    return false;
 }
 
 void NumberFrame::resetNumChangeAnimation() {

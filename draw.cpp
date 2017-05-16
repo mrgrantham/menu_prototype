@@ -7,11 +7,14 @@
 
 #include "draw.hpp"
 
+static bool aPixel=true;
+
+
 void setDraw() {
-    pixel = true;
+    aPixel = true;
 }
 void setErase() {
-    pixel = false;
+    aPixel = false;
 }
 
 void drawLine(Screen *screen, int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
@@ -74,8 +77,8 @@ void drawLine(Screen *screen, int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
                 }
                 ycomp -= xdiff;
             }
-            // screen->drawPixel( xinc,yinc);
-            drawDev(xinc,yinc,pixel);
+            // screen->drawaPixel( xinc,yinc);
+            drawDev(xinc,yinc,aPixel);
         }
     } else { // Y is the longer traversal
         //xcomp = xdiff - ydiff; 
@@ -103,8 +106,8 @@ void drawLine(Screen *screen, int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
                 }                
                 xcomp -= ydiff;
             }
-            // screen->drawPixel( xinc,yinc);
-            drawDev(xinc,yinc,pixel);
+            // screen->drawaPixel( xinc,yinc);
+            drawDev(xinc,yinc,aPixel);
         }
 
     }
@@ -135,13 +138,13 @@ void drawChar(Screen *screen, char letter, uint16_t xpos, uint16_t ypos, uint16_
     static uint16_t py = 0;
     for (col = 0; col < font_width; col++ ) {
         for (row = 0; row < font_height; row++ ) {
-            static uint8_t pixel;
-            pixel = (screen->current_font[(index * (font_width + 1)) + col] >> row) & 0x01;
+            static uint8_t txPixel;
+            txPixel = (screen->current_font[(index * (font_width + 1)) + col] >> row) & 0x01;
             for (px = 0; px < size; px++) {
                 for (py = 0; py < size; py++ ) {
-                    if (pixel) {
-                        // screen->drawPixel(xpos + (col * size) + px,ypos + (row * size) + py);
-                        drawDev(xpos + (col * size) + px,ypos + (row * size) + py,pixel);
+                    if (txPixel) {
+                        // screen->drawaPixel(xpos + (col * size) + px,ypos + (row * size) + py);
+                        drawDev(xpos + (col * size) + px,ypos + (row * size) + py,aPixel);
                     }
                 }
             }

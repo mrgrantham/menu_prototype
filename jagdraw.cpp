@@ -14,6 +14,7 @@
 #include "NumberFrame.hpp"
 #include "Screen.hpp"
 #include "pixel.h"
+#include <sstream>
 
 #define IM_ARRAYSIZE(_ARR)  ((int)(sizeof(_ARR)/sizeof(*_ARR)))
 
@@ -267,6 +268,7 @@ void ShowScrollTestWindow(bool * p_open) {
     
     // sets vertical positioning of items in  frame
     static int32_t scroller = 150;
+    static int32_t testVal = 0;
 
     static bool first_run = true;
     static anim_id test_animation;
@@ -296,6 +298,7 @@ void ShowScrollTestWindow(bool * p_open) {
     }
     ImGui::SameLine();
     ImGui::SliderInt("POS SLIDER", &scroller, 0, 300);
+    ImGui::SliderInt("VAL SLIDER", &testVal, 0, 20);
 
     canvas_pos = ImGui::GetCursorScreenPos();            // ImDrawList current_API uses screen coordinates!
     canvas_size = ImGui::GetContentRegionAvail();        // Resize canvas to what's available
@@ -423,7 +426,6 @@ void ShowScrollTestWindow(bool * p_open) {
 
             testFramePos = new Point();
             testFrame = new TextFrame(Point(200,50),*testFramePos,test,3);
-            testFrame->setMask(Point(0,135),Point(240,50));
             nameFrame = new TextFrame(Point(200,50),Point(30,280),bname,4);
             TextFrame *txt = new TextFrame(Point(200,50),Point(20,20),"BOARD CONNECTION: ACTIVE",1);
             TextFrame *txt2 = new TextFrame(Point(200,50),Point(20,40),"OP. TIME ELAPSED: XX:XX",1);
@@ -437,10 +439,15 @@ void ShowScrollTestWindow(bool * p_open) {
             manager->addFrame((ViewFrame*)txt2);
             manager->addFrame((ViewFrame*)txt3);
 
+            testFrame->setMask(Point(0,135),Point(240,50));
+
             first_time = false;
         }
 
-        mainScreen->clear();
+        // mainScreen->clear();
+        static char testValStr[8] = {0};
+        sprintf(testValStr,"%d PWR LVL",testVal);
+        testFrame->setText(testValStr);
 
         testFramePos->x = SCREEN_WIDTH/2 - (strlen(test)* font_size/2 * font_width);
         testFramePos->y = scroller;

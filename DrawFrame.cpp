@@ -22,28 +22,26 @@ void DrawFrame::addDrawing(drawing d, int32_t *params, int32_t numParams) {
 
 
 void DrawFrame::draw() {
-    if (changed) {
-        setDraw();
-        static int32_t i = 0;
-        for (i = 0; i < drawComSize; i++) {
-            static func_data *d_dat;
-            d_dat = &drawCommands[i];
-            if          (d_dat->d_shape == d_line) {
-                drawLine(_screen,   d_dat->dparams[0] + _position.x,
-                                    d_dat->dparams[1] + _position.y,
-                                    d_dat->dparams[2] + _position.x,
-                                    d_dat->dparams[3] + _position.y);
-            } else if   (d_dat->d_shape == d_rect) {
-                drawRec(_screen,   d_dat->dparams[0] + _position.x,
-                                    d_dat->dparams[1] + _position.y,
-                                    d_dat->dparams[2] + _position.x,
-                                    d_dat->dparams[3] + _position.y);
-            } else {
-                printf("invalid shape\n");
-            }
+    setDraw();
+    static int32_t i = 0;
+    for (i = 0; i < drawComSize; i++) {
+        static func_data *d_dat;
+        d_dat = &drawCommands[i];
+        if          (d_dat->d_shape == d_line) {
+            drawLine(_screen,   d_dat->dparams[0] + _position.x,
+                                d_dat->dparams[1] + _position.y,
+                                d_dat->dparams[2] + _position.x,
+                                d_dat->dparams[3] + _position.y);
+        } else if   (d_dat->d_shape == d_rect) {
+            drawRec(_screen,   d_dat->dparams[0] + _position.x,
+                                d_dat->dparams[1] + _position.y,
+                                d_dat->dparams[2] + _position.x,
+                                d_dat->dparams[3] + _position.y);
+        } else {
+            printf("invalid shape\n");
         }
-        changed = false; // redraw is now complete
     }
+    changed = false; // redraw is now complete
 }
 
 void DrawFrame::erase() {
